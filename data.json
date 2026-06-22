@@ -23,7 +23,55 @@
     "thu": []
   },
   "workouts": {},
-  "food": {},
+  "food": {
+    "2026-06-22": [
+      {
+        "id": 1782130843814,
+        "time": "16:20",
+        "meal_name": "Keto Zinger Chicken Wrap",
+        "foods": [
+          {
+            "name": "Keto saj bread",
+            "portion": "1 wrap",
+            "calories": 0,
+            "protein": 0,
+            "carbs": 0,
+            "fat": 0
+          },
+          {
+            "name": "Zinger chicken",
+            "portion": "1 serving",
+            "calories": 0,
+            "protein": 0,
+            "carbs": 0,
+            "fat": 0
+          },
+          {
+            "name": "Turkey slices",
+            "portion": "1 serving",
+            "calories": 0,
+            "protein": 0,
+            "carbs": 0,
+            "fat": 0
+          },
+          {
+            "name": "Special Zinger Sauce",
+            "portion": "1 serving",
+            "calories": 0,
+            "protein": 0,
+            "carbs": 0,
+            "fat": 0
+          }
+        ],
+        "totals": {
+          "calories": 720,
+          "protein": 74,
+          "carbs": 7,
+          "fat": 44
+        }
+      }
+    ]
+  },
   "phase": {
     "name": "hypertrophy",
     "startDate": "2026-06-22",
