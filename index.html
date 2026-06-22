@@ -579,7 +579,14 @@ textarea.field-input{resize:vertical;min-height:80px;line-height:1.5}
       <div class="field-group"><label class="field-label">InBody Score</label><input class="field-input" id="ib-score" type="number" placeholder="79"></div>
       <div class="field-group"><label class="field-label">5K Time (mm:ss)</label><input class="field-input" id="ib-5k" type="text" placeholder="38:30"></div>
     </div>
-    <button class="btn btnn" onclick="addInBody()">➕ Save Entry</button>
+    <div style="display:flex;gap:10px;align-items:center;margin-bottom:8px;flex-wrap:wrap">
+      <button class="btn btnn" onclick="addInBody()">➕ Save Entry</button>
+      <label class="btn" style="cursor:pointer;background:#1a2a1a;border:1.5px dashed #4ade80;color:#4ade80;font-size:.85rem" title="Upload InBody CSV from your phone or computer">
+        📁 Upload InBody CSV
+        <input type="file" accept=".csv,text/csv" id="inbody-csv-input" style="display:none" onchange="loadInBodyCSV(this)">
+      </label>
+    </div>
+    <div id="csv-status" style="font-size:.8rem;color:#888;margin-bottom:4px"></div>
   </div>
   <div class="card"><div class="ctitle">📜 InBody History</div><div id="inbody-table"></div></div>
 </div>
@@ -1212,6 +1219,81 @@ function addInBody() {
   renderInBodyTable();
   setTimeout(renderCharts, 100);
   showToast('✅ InBody entry saved & synced!', 'ok');
+}
+
+// ── InBody CSV Upload ─────────────────────────────────────────────────────────
+function loadInBodyCSV(input) {
+  const file = input.files[0];
+  if(!file) return;
+  const status = document.getElementById('csv-status');
+  status.textContent = '⏳ Reading CSV…';
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    try {
+      const lines = e.target.result.trim().split('\n');
+      if(lines.length < 2) { status.textContent = '❌ CSV looks empty'; return; }
+      const headers = lines[0].split(',');
+      const idx = h => headers.findIndex(c => c.trim().toLowerCase() === h.toLowerCase());
+
+      // Column indices — matches InBody 270 export format
+      const iDate    = idx('Date');
+      const iWeight  = idx('Weight(kg)');
+      const iMuscle  = idx('Skeletal Muscle Mass(kg)');
+      const iFat     = idx('Body Fat Mass(kg)');
+      const iBF      = idx('Percent Body Fat(%)');
+      const iScore   = idx('InBody Score');
+      const iVis     = idx('Visceral Fat Level(Level)');
+
+      let imported = 0;
+      for(let i = 1; i < lines.length; i++) {
+        const cols = lines[i].split(',');
+        if(!cols[iDate] || cols[iDate].trim() === '') continue;
+        const raw = cols[iDate].trim(); // e.g. 20260516093632
+        const y = raw.slice(0,4), mo = raw.slice(4,6), d = raw.slice(6,8);
+        const dateStr = `${y}-${mo}-${d}`;
+
+        const w  = parseFloat(cols[iWeight])  || null;
+        const sm = parseFloat(cols[iMuscle])  || null;
+        const ft = parseFloat(cols[iFat])     || null;
+        const bf = parseFloat(cols[iBF])      || null;
+        const sc = parseInt(cols[iScore])     || null;
+        const vi = parseInt(cols[iVis])       || null;
+
+        // Skip if duplicate date already exists
+        if(DATA.inbody.find(e => e.date === dateStr)) continue;
+
+        DATA.inbody.push({ date:dateStr, weight:w, bf, fat:ft, muscle:sm, visceral:vi, score:sc, time5k:null });
+        // Pre-fill the manual form with last row so user can add 5K time if desired
+        document.getElementById('ib-date').value  = dateStr;
+        document.getElementById('ib-wt').value    = w   || '';
+        document.getElementById('ib-bf').value    = bf  || '';
+        document.getElementById('ib-sm').value    = sm  || '';
+        document.getElementById('ib-fat').value   = ft  || '';
+        document.getElementById('ib-vis').value   = vi  || '';
+        document.getElementById('ib-score').value = sc  || '';
+        imported++;
+      }
+
+      if(imported === 0) { status.textContent = '⚠️ No new entries found (already imported?)'; return; }
+
+      DATA.inbody.sort((a,b) => new Date(a.date)-new Date(b.date));
+      const latest = DATA.inbody[DATA.inbody.length-1];
+      if(latest.weight) DATA.profile.weight = latest.weight;
+      if(latest.bf)     DATA.profile.bf = latest.bf;
+      if(latest.muscle) DATA.profile.muscle = latest.muscle;
+      saveData(true);
+      updateHeader();
+      renderInBodyTable();
+      setTimeout(renderCharts, 100);
+      status.textContent = `✅ Imported ${imported} entry/entries! Add your 5K time above and tap Save.`;
+      showToast(`✅ ${imported} InBody entry imported!`, 'ok');
+    } catch(err) {
+      status.textContent = '❌ Parse error — wrong CSV format?';
+      console.error(err);
+    }
+    input.value = ''; // reset so same file can be re-selected if needed
+  };
+  reader.readAsText(file);
 }
 
 function renderInBodyTable() {
