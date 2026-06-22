@@ -1187,8 +1187,8 @@ Identify every food item, estimate realistic portion sizes, and calculate nutrit
 Return ONLY valid JSON (no markdown, no explanation, no code blocks):
 {"meal_name":"brief meal name","foods":[{"name":"item name","portion":"e.g. 200g","calories":0,"protein":0,"carbs":0,"fat":0}],"totals":{"calories":0,"protein":0,"carbs":0,"fat":0}}`;
 
-  // Vision model for images, fast text model for descriptions
-  const model = isImage ? 'llama-3.2-11b-vision-preview' : 'llama-3.3-70b-versatile';
+  // Llama 4 Scout handles both vision and text
+  const model = 'meta-llama/llama-4-scout-17b-16e-instruct';
 
   const messages = isImage
     ? [{ role:'user', content:[
@@ -1645,7 +1645,7 @@ async function runDiagText() {
   el.textContent = '';
   if(!key) { diagAppend('❌ ERROR: No API key. Add it in ⚙️ Settings first.'); return; }
 
-  const models = ['llama-3.3-70b-versatile', 'llama-3.2-11b-vision-preview'];
+  const models = ['meta-llama/llama-4-scout-17b-16e-instruct', 'llama-3.3-70b-versatile'];
   for(const model of models) {
     diagAppend(`\n── Testing Groq model: ${model} ──`);
     diagAppend(`Sending simple text request...`);
