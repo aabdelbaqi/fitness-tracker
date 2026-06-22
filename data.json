@@ -1,0 +1,32 @@
+{
+  "profile": {
+    "weight": 78.7,
+    "bf": 19.9,
+    "muscle": 35.8,
+    "time5k": "38:30"
+  },
+  "inbody": [
+    {
+      "date": "2026-05-16",
+      "weight": 78.7,
+      "bf": 19.9,
+      "fat": 15.6,
+      "muscle": 35.8,
+      "visceral": 7,
+      "score": 79,
+      "time5k": "38:30"
+    }
+  ],
+  "cardio": {
+    "sun": [],
+    "tue": [],
+    "thu": []
+  },
+  "workouts": {},
+  "food": {},
+  "phase": {
+    "name": "hypertrophy",
+    "startDate": "2026-06-22",
+    "mesocycle": 1
+  }
+}
