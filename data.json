@@ -23,7 +23,31 @@
     "thu": []
   },
   "workouts": {},
-  "food": {},
+  "food": {
+    "2026-06-22": [
+      {
+        "id": 1782130726875,
+        "time": "16:18",
+        "meal_name": "Banana (1 medium)",
+        "foods": [
+          {
+            "name": "Banana (1 medium)",
+            "portion": "1 serving",
+            "calories": 105,
+            "protein": 1,
+            "carbs": 27,
+            "fat": 0
+          }
+        ],
+        "totals": {
+          "calories": 105,
+          "protein": 1,
+          "carbs": 27,
+          "fat": 0
+        }
+      }
+    ]
+  },
   "phase": {
     "name": "hypertrophy",
     "startDate": "2026-06-22",
