@@ -23,7 +23,31 @@
     "thu": []
   },
   "workouts": {},
-  "food": {},
+  "food": {
+    "2026-06-22": [
+      {
+        "id": 1782121257462,
+        "time": "13:40",
+        "meal_name": "Chicken Wrap",
+        "foods": [
+          {
+            "name": "Chicken Wrap",
+            "portion": "1 serving",
+            "calories": 720,
+            "protein": 74,
+            "carbs": 7,
+            "fat": 44
+          }
+        ],
+        "totals": {
+          "calories": 720,
+          "protein": 74,
+          "carbs": 7,
+          "fat": 44
+        }
+      }
+    ]
+  },
   "phase": {
     "name": "strength",
     "startDate": "2026-06-22",
