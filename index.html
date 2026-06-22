@@ -190,9 +190,9 @@ textarea.field-input{resize:vertical;min-height:80px;line-height:1.5}
     <h2>⚙️ First-Time Setup</h2>
     <p>Connect your AI and sync services. Your keys are stored only on this device (never sent anywhere except the APIs you configure).</p>
     <div class="field-group">
-      <label class="field-label">🤖 Gemini API Key (required for food photo analysis)</label>
-      <input class="field-input" id="setup-gem" type="password" placeholder="AIza...">
-      <div style="font-size:11px;color:var(--g4);margin-top:4px">Get free key → <a href="https://aistudio.google.com" target="_blank" style="color:var(--teal)">aistudio.google.com</a></div>
+      <label class="field-label">🤖 Groq API Key (required for food photo & text analysis)</label>
+      <input class="field-input" id="setup-gem" type="password" placeholder="gsk_...">
+      <div style="font-size:11px;color:var(--g4);margin-top:4px">Free key (14,400 req/day) → <a href="https://console.groq.com/keys" target="_blank" style="color:var(--teal)">console.groq.com/keys</a></div>
     </div>
     <div class="field-group">
       <label class="field-label">🔄 GitHub Token (optional — enables cross-device sync)</label>
@@ -406,7 +406,7 @@ textarea.field-input{resize:vertical;min-height:80px;line-height:1.5}
   <div id="food-loading" style="display:none" class="card" style="text-align:center;padding:32px">
     <div style="text-align:center;padding:16px">
       <div class="spinner" style="margin-bottom:12px"></div>
-      <div style="font-weight:600;color:var(--teal)">Gemini is analyzing your food...</div>
+      <div style="font-weight:600;color:var(--teal)">AI is analyzing your food...</div>
       <div style="font-size:12px;color:var(--g4);margin-top:4px">Usually takes 3–5 seconds</div>
     </div>
   </div>
@@ -677,7 +677,7 @@ const GH_FILE = 'data.json';
 const TARGETS = { calories:2450, protein:160, carbs:270, fat:82 };
 
 // ── Keys ─────────────────────────────────────────────────────────────────────
-const getGemKey = () => localStorage.getItem('gem_key') || '';
+const getGemKey  = () => localStorage.getItem('groq_key') || localStorage.getItem('gem_key') || '';
 const getGHToken = () => localStorage.getItem('gh_token') || '';
 
 // ── Data Model ────────────────────────────────────────────────────────────────
@@ -722,7 +722,7 @@ function hideSetup() { document.getElementById('setup-overlay').style.display = 
 function saveSetup() {
   const gem = document.getElementById('setup-gem').value.trim();
   const gh  = document.getElementById('setup-gh').value.trim();
-  if(gem) localStorage.setItem('gem_key', gem);
+  if(gem) localStorage.setItem('groq_key', gem);
   if(gh)  localStorage.setItem('gh_token', gh);
   hideSetup();
   showToast('✅ Settings saved!', 'ok');
@@ -1177,7 +1177,7 @@ function saveManualEntry() {
   showFoodResult(result);
 }
 
-// ── Gemini Food Analysis (with 429 retry) ────────────────────────────────────
+// ── Groq Food Analysis ────────────────────────────────────────────────────────
 async function analyzeFood(input, isImage=false) {
   const key = getGemKey();
   if(!key) { showSetup(); return null; }
@@ -1187,45 +1187,44 @@ Identify every food item, estimate realistic portion sizes, and calculate nutrit
 Return ONLY valid JSON (no markdown, no explanation, no code blocks):
 {"meal_name":"brief meal name","foods":[{"name":"item name","portion":"e.g. 200g","calories":0,"protein":0,"carbs":0,"fat":0}],"totals":{"calories":0,"protein":0,"carbs":0,"fat":0}}`;
 
-  const parts = [{ text: prompt }];
-  if(isImage) parts.push({ inlineData: { mimeType:'image/jpeg', data:input } });
-  const body = JSON.stringify({ contents:[{parts}], generationConfig:{temperature:0.1, maxOutputTokens:512} });
+  // Vision model for images, fast text model for descriptions
+  const model = isImage ? 'llama-3.2-11b-vision-preview' : 'llama-3.3-70b-versatile';
 
-  // Try flash-lite first (30 RPM), fall back to flash (15 RPM)
-  const MODELS = ['gemini-2.0-flash-lite', 'gemini-2.0-flash'];
-  for(const model of MODELS) {
-    for(let attempt = 1; attempt <= 2; attempt++) {
-      try {
-        const res = await fetch(
-          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
-          { method:'POST', headers:{'Content-Type':'application/json'}, body }
-        );
-        if(res.status === 429) {
-          if(attempt === 1) {
-            showToast(`⏳ Rate limit — retrying in 8s...`, 'err');
-            await new Promise(r => setTimeout(r, 8000));
-            continue;
-          }
-          break; // try next model
-        }
-        if(!res.ok) {
-          const errData = await res.json().catch(()=>({}));
-          showToast(`⚠️ Gemini ${res.status}: ${errData?.error?.message||'unknown'}`, 'err');
-          return null;
-        }
-        const data = await res.json();
-        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-        const match = text.match(/\{[\s\S]*\}/);
-        if(!match) { showToast('⚠️ Could not parse response', 'err'); return null; }
-        return JSON.parse(match[0]);
-      } catch(e) { /* network error, try next */ }
+  const messages = isImage
+    ? [{ role:'user', content:[
+        { type:'text', text: prompt },
+        { type:'image_url', image_url:{ url:`data:image/jpeg;base64,${input}` }}
+      ]}]
+    : [{ role:'user', content: prompt }];
+
+  const body = JSON.stringify({ model, messages, temperature:0.1, max_tokens:512 });
+
+  try {
+    const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', 'Authorization':`Bearer ${key}` },
+      body
+    });
+    if(res.status === 429) {
+      showToast('⚠️ Rate limit hit. Wait 30s and retry.', 'err');
+      showLoading(false);
+      showManualEntry();
+      return null;
     }
+    if(!res.ok) {
+      const err = await res.json().catch(()=>({}));
+      showToast(`⚠️ Groq error ${res.status}: ${err?.error?.message||'unknown'}`, 'err');
+      return null;
+    }
+    const data = await res.json();
+    const text = data.choices?.[0]?.message?.content || '';
+    const match = text.match(/\{[\s\S]*\}/);
+    if(!match) { showToast('⚠️ Could not parse response', 'err'); return null; }
+    return JSON.parse(match[0]);
+  } catch(e) {
+    showToast('⚠️ Network error: ' + e.message, 'err');
+    return null;
   }
-  // All models rate-limited — prompt user to type instead
-  showToast('⚠️ API busy. Use ✏️ Type to log manually.', 'err');
-  showLoading(false);
-  showTextInput();
-  return null;
 }
 
 // ── Food Photo Handler ────────────────────────────────────────────────────────
@@ -1622,10 +1621,14 @@ function showDiag() {
   const keyEl = document.getElementById('diag-key-status');
   if(!key) {
     keyEl.style.background = '#fee2e2'; keyEl.style.color = '#991b1b';
-    keyEl.textContent = '❌ No Gemini API key saved. Go to ⚙️ Settings and paste your key from aistudio.google.com';
+    keyEl.textContent = '❌ No API key saved. Go to ⚙️ Settings and paste your Groq key from console.groq.com/keys';
   } else {
-    keyEl.style.background = '#f0fdf4'; keyEl.style.color = '#166534';
-    keyEl.textContent = `✅ API key found: ${key.slice(0,8)}...${key.slice(-4)} (${key.length} chars)`;
+    const isGroq = key.startsWith('gsk_');
+    keyEl.style.background = isGroq ? '#f0fdf4' : '#fef3c7';
+    keyEl.style.color = isGroq ? '#166534' : '#92400e';
+    keyEl.textContent = isGroq
+      ? `✅ Groq key found: ${key.slice(0,8)}...${key.slice(-4)} (${key.length} chars)`
+      : `⚠️ Key found but doesn't look like a Groq key (should start with gsk_): ${key.slice(0,8)}...`;
   }
   const el = document.getElementById('diag-results');
   el.textContent = 'Tap a test button above to begin diagnostics.\n\nTests will show:\n• HTTP status code\n• Full error message from Google\n• Which model responded\n• Rate limit details';
@@ -1642,57 +1645,52 @@ async function runDiagText() {
   el.textContent = '';
   if(!key) { diagAppend('❌ ERROR: No API key. Add it in ⚙️ Settings first.'); return; }
 
-  const models = ['gemini-2.0-flash-lite', 'gemini-2.0-flash', 'gemini-1.5-flash'];
+  const models = ['llama-3.3-70b-versatile', 'llama-3.2-11b-vision-preview'];
   for(const model of models) {
-    diagAppend(`\n── Testing model: ${model} ──`);
+    diagAppend(`\n── Testing Groq model: ${model} ──`);
     diagAppend(`Sending simple text request...`);
     const t0 = Date.now();
     try {
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
-        { method:'POST', headers:{'Content-Type':'application/json'},
-          body: JSON.stringify({ contents:[{parts:[{text:'Say OK'}]}], generationConfig:{maxOutputTokens:5} }) }
-      );
+      const res = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json', 'Authorization':`Bearer ${key}` },
+        body: JSON.stringify({ model, messages:[{role:'user',content:'Say OK'}], max_tokens:5 })
+      });
       const ms = Date.now()-t0;
       diagAppend(`HTTP Status: ${res.status} ${res.statusText} (${ms}ms)`);
       const body = await res.json();
-      diagAppend(`Response body:\n${JSON.stringify(body, null, 2)}`);
+      diagAppend(`Response:\n${JSON.stringify(body, null, 2)}`);
       if(res.status === 200) {
-        diagAppend(`✅ SUCCESS — ${model} is working!`);
+        diagAppend(`✅ SUCCESS — Groq is working! Food analysis is ready.`);
         break;
       } else if(res.status === 429) {
-        diagAppend(`⚠️ RATE LIMITED (429)`);
-        const retryAfter = body?.error?.details?.find(d=>d['@type']?.includes('QuotaFailure'));
-        if(retryAfter) diagAppend(`Quota detail: ${JSON.stringify(retryAfter)}`);
-        diagAppend(`→ This means: Too many requests. Either wait 60s (per-minute limit) or you've hit the daily cap (1,500 req/day free tier).`);
+        diagAppend(`⚠️ RATE LIMITED — wait 30s and retry.`);
+      } else if(res.status === 401) {
+        diagAppend(`❌ UNAUTHORIZED — API key is wrong. Get a new one at console.groq.com/keys`);
       } else if(res.status === 400) {
-        diagAppend(`❌ BAD REQUEST — likely API key is invalid or malformed.`);
-      } else if(res.status === 403) {
-        diagAppend(`❌ FORBIDDEN — API key doesn't have permission or billing not enabled.`);
+        diagAppend(`❌ BAD REQUEST — key may be malformed.`);
       }
     } catch(e) {
       diagAppend(`❌ NETWORK ERROR: ${e.message}`);
-      diagAppend(`→ Possible causes: no internet, CORS block, or Google API is down.`);
     }
   }
-  diagAppend('\n── Diagnostics complete ──');
-  diagAppend('Tap 📋 Copy Log to share these results.');
+  diagAppend('\n── Done. Tap 📋 Copy Log to share. ──');
 }
 
 async function runDiagQuota() {
   const key = getGemKey();
   diagLog = '';
   if(!key) { diagAppend('❌ No API key found.'); return; }
-  diagAppend('Checking available models on your key...\n');
+  diagAppend('Listing available Groq models...\n');
   try {
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models?key=${key}`
-    );
+    const res = await fetch('https://api.groq.com/openai/v1/models', {
+      headers:{ 'Authorization':`Bearer ${key}` }
+    });
     diagAppend(`HTTP Status: ${res.status}`);
     const body = await res.json();
     if(res.status === 200) {
-      const names = (body.models||[]).map(m=>m.name).filter(n=>n.includes('flash')||n.includes('pro'));
-      diagAppend(`✅ Key is valid. Available flash/pro models:\n${names.join('\n')}`);
+      const names = (body.data||[]).map(m=>m.id).filter(n=>n.includes('llama')||n.includes('mixtral'));
+      diagAppend(`✅ Key valid. Available models:\n${names.join('\n')}`);
     } else {
       diagAppend(`Response:\n${JSON.stringify(body,null,2)}`);
     }
@@ -1902,7 +1900,7 @@ function setTodayDates() {
     }
   }
 
-  // Show setup if no Gemini key
+  // Show setup if no AI key
   if(!getGemKey()) showSetup();
 
   if(!DATA.phase) DATA.phase = { name:'hypertrophy', startDate: todayStr(), mesocycle:1 };
