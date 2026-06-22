@@ -407,10 +407,11 @@ textarea.field-input{resize:vertical;min-height:80px;line-height:1.5}
 
 <!-- ═══ LEGS (FRI) ═══ -->
 <div class="sec" id="sec-legs">
-  <div class="note"><strong>⚠️ Until July 2026:</strong> Attend F45. Focus on Squat, Deadlift &amp; Lunge patterns.</div>
+  <div class="note"><strong>⚠️ Until July 2026:</strong> Attend F45. Focus on Hamstrings, Glutes &amp; Hip Hinge movements. <strong>Avoid squats &amp; lunges</strong> due to knee injury.</div>
+  <div class="note" style="border-color:var(--or);background:#fff8f0"><strong>🦵 Knee Note:</strong> Squats and lunges removed. All exercises here are low-compression and knee-safe. Avoid full deep knee bend on Leg Press — stop at 90°.</div>
   <div class="card">
-    <div class="ctitle">💪 Friday — Legs | Quads · Hamstrings · Glutes · Calves</div>
-    <div class="info"><strong>Warm-up:</strong> 5 min bike/row + 2 goblet squats + hip circles. Legs = biggest muscle group = most fat burn.</div>
+    <div class="ctitle">💪 Friday — Legs | Hamstrings · Glutes · Quads · Calves</div>
+    <div class="info"><strong>Warm-up:</strong> 5 min bike (low resistance) + hip circles + lying glute bridges × 15. No jumping or deep knee flexion in warm-up.</div>
     <div id="legs-exercises"></div>
   </div>
 </div>
@@ -795,21 +796,18 @@ const PULL = [
 ];
 
 const LEGS = [
-  { name:'Barbell Back Squat', sets:4, reps:'5–7', rest:'120s', rpe:'8',
-    cue:'<strong>Big breath + brace.</strong> Break hips and knees simultaneously, go below parallel. Knees track over toes — never cave inward.',
-    video:'https://www.youtube.com/results?search_query=barbell+back+squat+form+below+parallel' },
-  { name:'Romanian Deadlift (RDL)', sets:4, reps:'6–8', rest:'90s', rpe:'7–8',
-    cue:'<strong>Push hips back</strong> (not down). Bar traces down thighs — keep it close. Feel the hamstring stretch. Drive hips forward to stand.',
+  { name:'Technogym Leg Press', sets:4, reps:'10–12', rest:'90s', rpe:'7–8',
+    cue:'<strong>Feet shoulder-width, mid-platform.</strong> Lower until ~90° knee bend — stop before hips tuck. Drive through heels. Higher foot placement = more glutes/hamstrings. <strong>No locking knees at top.</strong> Controlled on the way down.',
+    video:'https://www.youtube.com/results?search_query=leg+press+machine+knee+injury+safe+form' },
+  { name:'Romanian Deadlift (RDL)', sets:4, reps:'8–10', rest:'90s', rpe:'7–8',
+    cue:'<strong>Push hips back</strong> (not down). Bar traces down thighs — keep it close. Feel the hamstring stretch at bottom. Drive hips forward to stand. Minimal knee bend = hamstring dominant, very knee-friendly.',
     video:'https://www.youtube.com/results?search_query=romanian+deadlift+hamstring+hip+hinge+form' },
-  { name:'Leg Press (Machine)', sets:3, reps:'10–12', rest:'75s', rpe:'7',
-    cue:'Shoulder-width, mid-platform. Lower to ~90°. <strong>Don\'t let lower back lift.</strong> Higher foot = more glutes. Lower foot = more quads.',
-    video:'https://www.youtube.com/results?search_query=leg+press+machine+form+foot+placement' },
-  { name:'Walking Lunges (DB)', sets:3, reps:'10 /leg', rest:'60s', rpe:'7',
-    cue:'Long stride, front knee over ankle. Back knee nearly touches floor. <strong>Push through front heel.</strong> Torso upright throughout.',
-    video:'https://www.youtube.com/results?search_query=walking+lunges+dumbbell+form+tutorial' },
   { name:'Lying Leg Curl (Machine)', sets:3, reps:'10–12', rest:'60s', rpe:'7',
-    cue:'<strong>3-second eccentric (lowering phase)</strong> — most hamstring tears happen here. Don\'t let hips lift. Full ROM.',
+    cue:'<strong>3-second eccentric (lowering phase).</strong> Don\'t let hips lift off the pad. Full ROM. Hamstring-only movement — zero knee joint compression.',
     video:'https://www.youtube.com/results?search_query=lying+leg+curl+machine+hamstring+form' },
+  { name:'Hip Thrust (Barbell or DB)', sets:3, reps:'10–12', rest:'75s', rpe:'7',
+    cue:'Upper back on bench, bar across hips. <strong>Drive through heels</strong>, squeeze glutes hard at top. Hold 1s at peak. Knees stay at 90° — no knee stress at all.',
+    video:'https://www.youtube.com/results?search_query=barbell+hip+thrust+glute+form+tutorial' },
   { name:'Standing Calf Raise', sets:4, reps:'15–20', rest:'45s', rpe:'7',
     cue:'Ball of foot on step edge for <strong>full range.</strong> Full stretch at bottom (hold 1s), full rise at top (hold 1s). Partial reps don\'t work for calves.',
     video:'https://www.youtube.com/results?search_query=standing+calf+raise+full+range+form' },
