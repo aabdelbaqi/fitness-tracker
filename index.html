@@ -2,35 +2,53 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Ahmed Fitness">
 <title>Ahmed Fitness Tracker</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 :root{--navy:#1a2b4a;--teal:#00c7b2;--tl:#e0faf8;--w:#fff;--g0:#f9fafb;--g1:#f3f4f6;--g2:#e5e7eb;--g4:#9ca3af;--g6:#4b5563;--g8:#1f2937;--or:#f97316;--gr:#22c55e;--rd:#ef4444;--yl:#f59e0b;--bl:#3b82f6;--pu:#8b5cf6;--em:#10b981}
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'Segoe UI',Arial,sans-serif;background:var(--g0);color:var(--g8);min-height:100vh}
-.hdr{background:var(--navy);color:#fff}
-.hdr-top{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;flex-wrap:wrap;gap:10px}
-.hdr-logo{font-size:19px;font-weight:700}.hdr-logo span{color:var(--teal)}
-.hdr-sub{font-size:11px;color:rgba(255,255,255,.5);margin-top:2px}
-.hdr-stats{display:flex;gap:18px;flex-wrap:wrap}
-.stat-p{text-align:center}.stat-p .v{font-size:17px;font-weight:700;color:var(--teal)}.stat-p .l{font-size:10px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.5px}
+body{font-family:-apple-system,'Segoe UI',Arial,sans-serif;background:var(--g0);color:var(--g8);min-height:100vh;-webkit-font-smoothing:antialiased}
+/* ── Setup Modal ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px}
+.modal{background:#fff;border-radius:16px;padding:24px;max-width:460px;width:100%;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+.modal h2{color:var(--navy);font-size:18px;margin-bottom:6px}
+.modal p{font-size:13px;color:var(--g6);margin-bottom:20px;line-height:1.6}
+/* ── Header ── */
+.hdr{background:var(--navy);color:#fff;position:sticky;top:0;z-index:100}
+.hdr-top{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;flex-wrap:wrap;gap:8px}
+.hdr-logo{font-size:17px;font-weight:700}.hdr-logo span{color:var(--teal)}
+.hdr-sub{font-size:10px;color:rgba(255,255,255,.5);margin-top:1px}
+.hdr-right{display:flex;align-items:center;gap:12px}
+.hdr-stats{display:flex;gap:14px}
+.stat-p{text-align:center;cursor:pointer}
+.stat-p .v{font-size:15px;font-weight:700;color:var(--teal)}.stat-p .l{font-size:9px;color:rgba(255,255,255,.5);text-transform:uppercase;letter-spacing:.5px}
+.sync-btn{background:rgba(255,255,255,.1);border:none;color:rgba(255,255,255,.8);padding:6px 10px;border-radius:8px;font-size:12px;cursor:pointer;transition:all .2s}
+.sync-btn:hover{background:rgba(255,255,255,.2)}
+.settings-btn{background:none;border:none;color:rgba(255,255,255,.6);font-size:18px;cursor:pointer;padding:4px}
+/* ── Nav ── */
 .nav{background:rgba(0,0,0,.25);display:flex;overflow-x:auto;scrollbar-width:none}
 .nav::-webkit-scrollbar{display:none}
-.nb{padding:11px 15px;border:none;background:transparent;color:rgba(255,255,255,.6);font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;transition:all .2s}
+.nb{padding:10px 14px;border:none;background:transparent;color:rgba(255,255,255,.6);font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;border-bottom:3px solid transparent;transition:all .2s}
 .nb:hover,.nb.on{color:#fff;border-bottom-color:var(--teal)}.nb.on{background:rgba(0,199,178,.12)}
-.main{max-width:1100px;margin:0 auto;padding:18px 14px}
+/* ── Layout ── */
+.main{max-width:1100px;margin:0 auto;padding:16px 12px}
 .sec{display:none}.sec.on{display:block}
 .card{background:#fff;border-radius:12px;box-shadow:0 1px 3px rgba(0,0,0,.08);padding:16px;margin-bottom:14px}
 .ctitle{font-size:12px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.5px;margin-bottom:12px;display:flex;align-items:center;gap:8px}
 .ctitle::after{content:'';flex:1;height:1px;background:var(--g2)}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
-@media(max-width:700px){.g2,.g3,.g4{grid-template-columns:1fr}}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+@media(max-width:600px){.g2,.g3,.g4{grid-template-columns:1fr 1fr}.g4{grid-template-columns:1fr 1fr}}
+/* ── Tiles ── */
 .tile{background:#fff;border-radius:10px;padding:14px;border-left:4px solid var(--teal);box-shadow:0 1px 3px rgba(0,0,0,.06)}
-.tile .v{font-size:24px;font-weight:700;color:var(--navy)}.tile .l{font-size:11px;color:var(--g4);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}.tile .ch{font-size:11px;margin-top:4px}
+.tile .v{font-size:22px;font-weight:700;color:var(--navy)}.tile .l{font-size:10px;color:var(--g4);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}.tile .ch{font-size:11px;margin-top:4px}
 .cup{color:var(--gr)}.cdn{color:var(--rd)}
+/* ── Exercise Cards ── */
 .exc{border:1px solid var(--g2);border-radius:10px;overflow:hidden;margin-bottom:10px;transition:box-shadow .2s}.exc:hover{box-shadow:0 3px 10px rgba(0,0,0,.1)}
 .exh{display:flex;align-items:flex-start;justify-content:space-between;padding:12px 14px;cursor:pointer;gap:10px}
 .exn{font-weight:600;font-size:14px;color:var(--navy)}.exm{display:flex;gap:5px;margin-top:5px;flex-wrap:wrap}
@@ -38,92 +56,161 @@ body{font-family:'Segoe UI',Arial,sans-serif;background:var(--g0);color:var(--g8
 .bs{background:#eff6ff;color:var(--bl)}.br{background:#f0fdf4;color:var(--em)}.brt{background:#fff7ed;color:var(--or)}.brpe{background:#f5f3ff;color:var(--pu)}
 .exarr{font-size:11px;color:var(--g4);transition:transform .2s;padding-top:3px;flex-shrink:0}.exarr.open{transform:rotate(180deg)}
 .exb{display:none;border-top:1px solid var(--g2)}.exb.on{display:block}
-.excue{font-size:12px;color:var(--g6);line-height:1.6;padding:12px 14px 0;background:var(--g0)}
-.excue strong{color:var(--navy)}
-.vbtn{display:inline-flex;align-items:center;gap:5px;background:#ff0000;color:#fff;padding:5px 12px;border-radius:6px;text-decoration:none;font-size:11px;font-weight:600;margin:8px 14px 12px}
-.vbtn:hover{opacity:.85}
+.excue{font-size:12px;color:var(--g6);line-height:1.6;padding:12px 14px 0;background:var(--g0)}.excue strong{color:var(--navy)}
+.vbtn{display:inline-flex;align-items:center;gap:5px;background:#ff0000;color:#fff;padding:5px 12px;border-radius:6px;text-decoration:none;font-size:11px;font-weight:600;margin:8px 14px 12px}.vbtn:hover{opacity:.85}
 .log-area{background:#fff;padding:10px 14px}
-.log-hdr{display:grid;grid-template-columns:26px 1fr 1fr 1fr 28px;gap:6px;font-size:10px;color:var(--g4);font-weight:600;text-transform:uppercase;margin-bottom:6px;padding:0 2px;text-align:center}
-.log-hdr span:first-child{text-align:left}
+.log-hdr{display:grid;grid-template-columns:26px 1fr 1fr 1fr 28px;gap:6px;font-size:10px;color:var(--g4);font-weight:600;text-transform:uppercase;margin-bottom:6px;padding:0 2px;text-align:center}.log-hdr span:first-child{text-align:left}
 .log-row{display:grid;grid-template-columns:26px 1fr 1fr 1fr 28px;gap:6px;align-items:center;margin-bottom:6px}
 .snum{width:22px;height:22px;border-radius:50%;background:var(--navy);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center}
-.li{border:1px solid var(--g2);border-radius:6px;padding:5px 6px;font-size:12px;text-align:center;width:100%;transition:border-color .2s}
-.li:focus{outline:none;border-color:var(--teal)}.li::placeholder{color:var(--g4)}
-.lchk{width:22px;height:22px;border-radius:50%;border:2px solid var(--g2);background:#fff;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:all .2s}
-.lchk.dn{background:var(--gr);border-color:var(--gr);color:#fff}
+.li{border:1px solid var(--g2);border-radius:6px;padding:5px 6px;font-size:12px;text-align:center;width:100%;transition:border-color .2s}.li:focus{outline:none;border-color:var(--teal)}.li::placeholder{color:var(--g4)}
+.lchk{width:22px;height:22px;border-radius:50%;border:2px solid var(--g2);background:#fff;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center;transition:all .2s}.lchk.dn{background:var(--gr);border-color:var(--gr);color:#fff}
+/* ── Tabs ── */
 .tabg{display:flex;gap:3px;background:var(--g1);padding:4px;border-radius:10px;margin-bottom:14px}
-.tbb{flex:1;padding:7px 8px;border-radius:7px;border:none;background:transparent;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;color:var(--g6)}
-.tbb.on{background:#fff;color:var(--navy);font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.tbb{flex:1;padding:7px 8px;border-radius:7px;border:none;background:transparent;font-size:12px;font-weight:500;cursor:pointer;transition:all .2s;color:var(--g6)}.tbb.on{background:#fff;color:var(--navy);font-weight:700;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+/* ── Tables ── */
 table{width:100%;border-collapse:collapse}
-th{background:var(--navy);color:#fff;padding:8px 12px;font-size:11px;text-align:left}
-td{padding:8px 12px;font-size:12px;border-bottom:1px solid var(--g1);vertical-align:top}
+th{background:var(--navy);color:#fff;padding:8px 10px;font-size:11px;text-align:left}
+td{padding:8px 10px;font-size:12px;border-bottom:1px solid var(--g1);vertical-align:top}
 tr:hover td{background:var(--tl)}
-.note{background:#fff7ed;border-left:4px solid var(--or);padding:10px 13px;border-radius:0 8px 8px 0;font-size:12px;margin-bottom:12px}
-.note strong{color:var(--or)}
-.info{background:#eff6ff;border-left:4px solid var(--bl);padding:10px 13px;border-radius:0 8px 8px 0;font-size:12px;margin-bottom:12px}
-.info strong{color:var(--bl)}
-.pt{background:var(--g0);border-radius:8px;padding:10px;text-align:center;border:1px solid var(--g2)}
-.pt .pv{font-size:18px;font-weight:700;color:var(--navy)}.pt .pl{font-size:10px;color:var(--g4);text-transform:uppercase}
+/* ── Notes ── */
+.note{background:#fff7ed;border-left:4px solid var(--or);padding:10px 13px;border-radius:0 8px 8px 0;font-size:12px;margin-bottom:12px}.note strong{color:var(--or)}
+.info{background:#eff6ff;border-left:4px solid var(--bl);padding:10px 13px;border-radius:0 8px 8px 0;font-size:12px;margin-bottom:12px}.info strong{color:var(--bl)}
+/* ── Pace Tiles ── */
+.pt{background:var(--g0);border-radius:8px;padding:10px;text-align:center;border:1px solid var(--g2)}.pt .pv{font-size:17px;font-weight:700;color:var(--navy)}.pt .pl{font-size:10px;color:var(--g4);text-transform:uppercase}
 .pt.hi{background:var(--tl);border-color:var(--teal)}.pt.hi .pv{color:#007a6e}
+/* ── Charts ── */
 .ch-wrap{position:relative;height:200px}
-.btn{padding:6px 14px;border-radius:7px;border:none;font-size:12px;font-weight:600;cursor:pointer;transition:all .2s}
+/* ── Buttons ── */
+.btn{padding:8px 14px;border-radius:8px;border:none;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;display:inline-flex;align-items:center;justify-content:center;gap:6px}
 .btnt{background:var(--teal);color:#fff}.btnt:hover{background:#00a693}
 .btnn{background:var(--navy);color:#fff}.btnn:hover{background:#243d63}
 .btng{background:var(--gr);color:#fff}
-.toast{position:fixed;bottom:18px;right:18px;background:var(--navy);color:#fff;padding:10px 16px;border-radius:10px;font-size:12px;box-shadow:0 4px 16px rgba(0,0,0,.2);display:none;align-items:center;gap:8px;z-index:999}
+.btn-red{background:var(--rd);color:#fff}
+.btn-ghost{background:var(--g1);color:var(--g8)}
+/* ── Toast ── */
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;box-shadow:0 4px 20px rgba(0,0,0,.25);display:none;align-items:center;gap:8px;z-index:999;white-space:nowrap}
 .toast.show{display:flex}
-.pi{width:75px;padding:4px 6px;border:1px solid var(--g2);border-radius:6px;font-size:12px;text-align:center}
-.pi:focus{outline:none;border-color:var(--teal)}
-.wk{display:grid;grid-template-columns:repeat(6,1fr);gap:10px}
-@media(max-width:700px){.wk{grid-template-columns:1fr 1fr}}
+.toast.err{background:var(--rd)}
+.toast.ok{background:var(--gr)}
+/* ── Weekly Grid ── */
+.wk{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(min-width:700px){.wk{grid-template-columns:repeat(6,1fr)}}
 .dc{border-radius:10px;overflow:hidden;border:2px solid transparent;cursor:pointer;transition:all .2s}.dc:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.12)}.dc.today{border-color:var(--teal)}
-.dch{padding:10px 12px;color:#fff;font-size:11px;font-weight:700;text-transform:uppercase}
-.dct{font-size:12px;font-weight:600;margin-bottom:3px}.dcf{font-size:10px;opacity:.85}
+.dch{padding:10px 12px;color:#fff;font-size:10px;font-weight:700;text-transform:uppercase}
+.dct{font-size:12px;font-weight:600;margin-bottom:2px}.dcf{font-size:10px;opacity:.85}
 .dcb{background:#fff;padding:10px 12px}
 .dcl{list-style:none;font-size:11px;color:var(--g6)}.dcl li{padding:2px 0;border-bottom:1px solid var(--g1)}.dcl li:last-child{border-bottom:none}
+/* ── Progress/Macro Bars ── */
+.macro-row{margin-bottom:12px}
+.macro-label{display:flex;justify-content:space-between;font-size:12px;font-weight:600;color:var(--g6);margin-bottom:4px}
+.macro-bar-bg{background:var(--g1);border-radius:20px;height:10px;overflow:hidden}
+.macro-bar-fill{height:10px;border-radius:20px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+/* ── Food Cards ── */
+.food-entry{border:1px solid var(--g2);border-radius:10px;padding:12px 14px;margin-bottom:10px;background:#fff}
+.food-entry-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.food-entry-name{font-weight:600;font-size:13px;color:var(--navy)}
+.food-entry-time{font-size:11px;color:var(--g4)}
+.food-macros{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
+.macro-chip{background:var(--g0);border-radius:6px;padding:5px 8px;text-align:center}
+.macro-chip .mc-v{font-size:14px;font-weight:700;color:var(--navy)}
+.macro-chip .mc-l{font-size:10px;color:var(--g4)}
+.food-item-list{font-size:11px;color:var(--g6);margin:4px 0;line-height:1.7}
+/* ── VO2 Card ── */
 .vo2card{background:linear-gradient(135deg,#1a2b4a,#2d4a7a);border-radius:12px;padding:18px;color:#fff;margin-bottom:14px}
-.vo2val{font-size:42px;font-weight:700;color:var(--teal)}
+.vo2val{font-size:40px;font-weight:700;color:var(--teal)}
 .vo2bar{background:rgba(255,255,255,.15);border-radius:20px;height:10px;margin:8px 0}
 .vo2fill{height:10px;border-radius:20px;background:var(--teal);transition:width .5s}
-.run-phase{border-radius:10px;overflow:hidden;margin-bottom:10px;border:1px solid var(--g2)}
-.rph{padding:12px 16px;color:#fff;font-weight:700;font-size:14px;display:flex;align-items:center;justify-content:space-between}
-.rpb{padding:14px 16px;background:#fff}
-.phase-dot{width:10px;height:10px;border-radius:50%;background:#fff;opacity:.5}.phase-dot.active{opacity:1}
+/* ── Field Inputs ── */
 .field-group{margin-bottom:12px}
 .field-label{display:block;font-size:11px;font-weight:600;color:var(--g6);margin-bottom:4px}
-.field-input{width:100%;padding:8px 10px;border:1.5px solid var(--g2);border-radius:8px;font-size:13px;transition:border-color .2s}
+.field-input{width:100%;padding:9px 11px;border:1.5px solid var(--g2);border-radius:8px;font-size:14px;transition:border-color .2s;background:#fff;-webkit-appearance:none}
 .field-input:focus{outline:none;border-color:var(--teal)}
-.badge-pill{display:inline-block;padding:2px 10px;border-radius:20px;font-size:11px;font-weight:600}
-.run-row{display:grid;grid-template-columns:80px 1fr 1fr 1fr;gap:10px;align-items:center;padding:8px 12px;border-bottom:1px solid var(--g1);font-size:12px}
-.run-row:last-child{border-bottom:none}
-.run-day{font-weight:700;color:var(--navy)}
+textarea.field-input{resize:vertical;min-height:80px;line-height:1.5}
+/* ── Loading Spinner ── */
+.spinner{width:32px;height:32px;border:3px solid var(--g2);border-top-color:var(--teal);border-radius:50%;animation:spin .8s linear infinite;margin:0 auto}
+@keyframes spin{to{transform:rotate(360deg)}}
+/* ── Calendar Strip ── */
+.cal-strip{display:flex;align-items:center;justify-content:space-between;background:#fff;border-radius:12px;padding:12px 16px;margin-bottom:14px;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.cal-date-display{text-align:center}
+.cal-date-main{font-weight:700;font-size:15px;color:var(--navy)}
+.cal-date-sub{font-size:11px;color:var(--g4);margin-top:2px}
+/* ── Big Add Buttons ── */
+.big-btn{padding:16px;border-radius:12px;border:none;font-size:14px;font-weight:700;cursor:pointer;transition:all .2s;flex:1;display:flex;flex-direction:column;align-items:center;gap:6px}
+.big-btn .icon{font-size:24px}
+/* ── Calorie Ring ── */
+.cal-ring-wrap{display:flex;align-items:center;gap:20px;margin-bottom:16px}
+.cal-numbers{flex:1}
+.cal-big{font-size:36px;font-weight:700;color:var(--navy);line-height:1}
+.cal-sub{font-size:11px;color:var(--g4);margin-top:2px}
+.cal-remaining{font-size:13px;font-weight:700;margin-top:6px}
+.cal-progress-bg{background:var(--g1);border-radius:20px;height:14px;overflow:hidden;margin:10px 0}
+.cal-progress-fill{height:14px;border-radius:20px;background:linear-gradient(90deg,var(--teal),var(--gr));transition:width .6s}
+/* ── Confirm Food Result ── */
+.confirm-card{background:var(--tl);border:2px solid var(--teal);border-radius:12px;padding:16px;margin-bottom:14px}
+.confirm-title{font-weight:700;font-size:15px;color:var(--navy);margin-bottom:10px}
+/* Misc */
+.empty-state{text-align:center;padding:32px 16px;color:var(--g4)}
+.empty-state .es-icon{font-size:36px;margin-bottom:8px}
+.empty-state .es-text{font-size:13px}
+.del-btn{background:none;border:none;color:var(--g4);cursor:pointer;font-size:16px;padding:0 4px;transition:color .2s}.del-btn:hover{color:var(--rd)}
+.sync-indicator{font-size:11px;padding:3px 8px;border-radius:20px;font-weight:600}
+.sync-ok{background:rgba(34,197,94,.15);color:#166534}
+.sync-ing{background:rgba(0,199,178,.15);color:#007a6e}
+.sync-err{background:rgba(239,68,68,.15);color:#991b1b}
 </style>
 </head>
 <body>
 
+<!-- ═══ SETUP MODAL ═══ -->
+<div class="overlay" id="setup-overlay" style="display:none">
+  <div class="modal">
+    <h2>⚙️ First-Time Setup</h2>
+    <p>Connect your AI and sync services. Your keys are stored only on this device (never sent anywhere except the APIs you configure).</p>
+    <div class="field-group">
+      <label class="field-label">🤖 Gemini API Key (required for food photo analysis)</label>
+      <input class="field-input" id="setup-gem" type="password" placeholder="AIza...">
+      <div style="font-size:11px;color:var(--g4);margin-top:4px">Get free key → <a href="https://aistudio.google.com" target="_blank" style="color:var(--teal)">aistudio.google.com</a></div>
+    </div>
+    <div class="field-group">
+      <label class="field-label">🔄 GitHub Token (optional — enables cross-device sync)</label>
+      <input class="field-input" id="setup-gh" type="password" placeholder="github_pat_...">
+      <div style="font-size:11px;color:var(--g4);margin-top:4px">Fine-grained token with Contents: Read &amp; Write on <strong>fitness-tracker</strong> repo</div>
+    </div>
+    <button class="btn btnt" style="width:100%;padding:12px;font-size:14px" onclick="saveSetup()">Save &amp; Start Tracking</button>
+    <div style="text-align:center;margin-top:10px">
+      <button class="btn btn-ghost" style="font-size:12px" onclick="skipSetup()">Skip for now (local only)</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ HEADER ═══ -->
 <div class="hdr">
   <div class="hdr-top">
     <div>
-      <div class="hdr-logo">Ahmed <span>Fitness Tracker</span> 🏋️</div>
-      <div class="hdr-sub">Goal: 76 kg · ↑ Muscle · 5K in 30 min · 6× Training / Week</div>
+      <div class="hdr-logo">Ahmed <span>Fitness</span> 🏋️</div>
+      <div class="hdr-sub">Goal: 76 kg · ↑ Muscle · 5K in 30 min</div>
     </div>
-    <div class="hdr-stats">
-      <div class="stat-p"><div class="v" id="hdr-wt">78.7</div><div class="l">Weight kg</div></div>
-      <div class="stat-p"><div class="v" id="hdr-bf">19.9%</div><div class="l">Body Fat</div></div>
-      <div class="stat-p"><div class="v" id="hdr-sm">35.8</div><div class="l">Muscle kg</div></div>
-      <div class="stat-p"><div class="v" id="hdr-5k">38:30</div><div class="l">5K Time</div></div>
+    <div class="hdr-right">
+      <div class="hdr-stats">
+        <div class="stat-p"><div class="v" id="hdr-wt">78.7</div><div class="l">kg</div></div>
+        <div class="stat-p"><div class="v" id="hdr-bf">19.9%</div><div class="l">Fat</div></div>
+        <div class="stat-p"><div class="v" id="hdr-5k">38:30</div><div class="l">5K</div></div>
+      </div>
+      <button class="sync-btn" id="sync-btn" onclick="manualSync()" title="Sync to GitHub">☁️</button>
+      <button class="settings-btn" onclick="showSetup()" title="Settings">⚙️</button>
     </div>
   </div>
   <nav class="nav">
-    <button class="nb on" onclick="goSec('dash',this)">🏠 Dashboard</button>
-    <button class="nb" onclick="goSec('week',this)">📅 This Week</button>
-    <button class="nb" onclick="goSec('push',this)">💪 Push — Mon</button>
-    <button class="nb" onclick="goSec('pull',this)">💪 Pull — Wed</button>
-    <button class="nb" onclick="goSec('legs',this)">💪 Legs — Fri</button>
-    <button class="nb" onclick="goSec('csun',this)">🏃 Cardio Sun</button>
-    <button class="nb" onclick="goSec('ctue',this)">🏃 Cardio Tue</button>
-    <button class="nb" onclick="goSec('cthu',this)">🏃 Cardio Thu</button>
-    <button class="nb" onclick="goSec('run5k',this)">📈 5K Plan</button>
+    <button class="nb on" onclick="goSec('dash',this)">🏠 Home</button>
+    <button class="nb" onclick="goSec('food',this)">🍎 Food</button>
+    <button class="nb" onclick="goSec('week',this)">📅 Week</button>
+    <button class="nb" onclick="goSec('push',this)">💪 Push</button>
+    <button class="nb" onclick="goSec('pull',this)">💪 Pull</button>
+    <button class="nb" onclick="goSec('legs',this)">💪 Legs</button>
+    <button class="nb" onclick="goSec('csun',this)">🏃 Sun</button>
+    <button class="nb" onclick="goSec('ctue',this)">🏃 Tue</button>
+    <button class="nb" onclick="goSec('cthu',this)">🏃 Thu</button>
+    <button class="nb" onclick="goSec('run5k',this)">📈 5K</button>
     <button class="nb" onclick="goSec('prog',this)">📊 Progress</button>
   </nav>
 </div>
@@ -133,111 +220,145 @@ tr:hover td{background:var(--tl)}
 <!-- ═══ DASHBOARD ═══ -->
 <div class="sec on" id="sec-dash">
   <div class="g4" style="margin-bottom:14px">
-    <div class="tile" style="border-color:var(--rd)">
-      <div class="l">Current Weight</div><div class="v" id="d-wt">78.7 kg</div>
-      <div class="ch cdn">↓ 2.7 kg to target 76 kg</div>
-    </div>
-    <div class="tile" style="border-color:var(--or)">
-      <div class="l">Body Fat</div><div class="v" id="d-bf">19.9%</div>
-      <div class="ch cdn">15.6 kg fat → target 11 kg</div>
-    </div>
-    <div class="tile" style="border-color:var(--gr)">
-      <div class="l">Skeletal Muscle</div><div class="v" id="d-sm">35.8 kg</div>
-      <div class="ch cup">↑ 2.2 kg to target 38 kg</div>
-    </div>
-    <div class="tile">
-      <div class="l">InBody Score</div><div class="v">79</div>
-      <div class="ch cup">Target: 85+</div>
+    <div class="tile" style="border-color:var(--rd)"><div class="l">Weight</div><div class="v" id="d-wt">78.7 kg</div><div class="ch cdn">Target: 76 kg</div></div>
+    <div class="tile" style="border-color:var(--or)"><div class="l">Body Fat</div><div class="v" id="d-bf">19.9%</div><div class="ch cdn">Target: 15%</div></div>
+    <div class="tile" style="border-color:var(--gr)"><div class="l">Muscle</div><div class="v" id="d-sm">35.8 kg</div><div class="ch cup">Target: 38 kg</div></div>
+    <div class="tile"><div class="l">InBody Score</div><div class="v">79</div><div class="ch cup">Target: 85+</div></div>
+  </div>
+  <!-- Today's calorie snapshot -->
+  <div class="card" id="dash-cal-card">
+    <div class="ctitle">🍎 Today's Nutrition</div>
+    <div id="dash-macro-summary">
+      <div class="empty-state" style="padding:12px"><div class="es-text">No food logged today. <button class="btn btnt" style="padding:4px 10px;font-size:12px;margin-left:6px" onclick="goSec('food',null)">Log Food →</button></div></div>
     </div>
   </div>
   <div class="g2">
     <div class="card">
-      <div class="ctitle">📍 InBody Baseline — 16 May 2026</div>
+      <div class="ctitle">📍 Baseline — InBody 16 May 2026</div>
       <table>
-        <tr><th>Metric</th><th>Baseline</th><th>Target</th></tr>
+        <tr><th>Metric</th><th>Now</th><th>Target</th></tr>
         <tr><td>Weight</td><td>78.7 kg</td><td>76.0 kg</td></tr>
         <tr><td>Body Fat Mass</td><td>15.6 kg</td><td>11.0 kg</td></tr>
         <tr><td>Skeletal Muscle</td><td>35.8 kg</td><td>38.0 kg</td></tr>
         <tr><td>Body Fat %</td><td>19.9%</td><td>15.0%</td></tr>
-        <tr><td>Trunk Fat</td><td>8.6 kg</td><td>6.0 kg</td></tr>
         <tr><td>Visceral Fat</td><td>Level 7</td><td>Level 5</td></tr>
-        <tr><td>BMR</td><td>1,732 kcal</td><td>1,800+ kcal</td></tr>
-        <tr><td>5K Run Time</td><td>38–39 min</td><td>30 min</td></tr>
-        <tr><td>Est. VO2 Max</td><td>~30 ml/kg/min</td><td>37+ ml/kg/min</td></tr>
+        <tr><td>BMR</td><td>1,732 kcal</td><td>1,800+</td></tr>
+        <tr><td>5K Time</td><td>38–39 min</td><td>30 min</td></tr>
       </table>
     </div>
     <div>
       <div class="card">
-        <div class="ctitle">📆 Weekly Schedule</div>
-        <div style="font-size:12px;line-height:2.1">
-          <span style="background:#f0fdf4;color:#166534;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700">SUN</span>&nbsp;🏃 Cardio — Base / Long Run&nbsp;&nbsp;
-          <span style="background:#eff6ff;color:#1d4ed8;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700">MON</span>&nbsp;💪 Strength — Push<br>
-          <span style="background:#f0fdf4;color:#166534;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700">TUE</span>&nbsp;🏃 Cardio — Speed Intervals&nbsp;&nbsp;
-          <span style="background:#eff6ff;color:#1d4ed8;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700">WED</span>&nbsp;💪 Strength — Pull<br>
-          <span style="background:#f0fdf4;color:#166534;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700">THU</span>&nbsp;🏃 Cardio — Tempo Run&nbsp;&nbsp;
-          <span style="background:#eff6ff;color:#1d4ed8;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700">FRI</span>&nbsp;💪 Strength — Legs<br>
-          <span style="background:var(--g1);color:var(--g6);padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700">SAT</span>&nbsp;😴 Rest &amp; Active Recovery
-        </div>
-      </div>
-      <div class="card">
-        <div class="ctitle">🎯 Daily Nutrition Targets</div>
-        <div class="g2" style="gap:10px">
-          <div class="pt"><div class="pv">2,450</div><div class="pl">Calories (kcal)</div></div>
+        <div class="ctitle">🎯 Daily Targets</div>
+        <div class="g2" style="gap:8px">
+          <div class="pt hi"><div class="pv">2,450</div><div class="pl">Calories</div></div>
           <div class="pt hi"><div class="pv">160 g</div><div class="pl">Protein</div></div>
           <div class="pt"><div class="pv">270 g</div><div class="pl">Carbs</div></div>
           <div class="pt"><div class="pv">3.5 L</div><div class="pl">Water</div></div>
         </div>
       </div>
       <div class="card">
-        <div class="ctitle">🏋️ Update Quick Stats</div>
-        <div class="g2" style="gap:10px">
-          <div class="field-group">
-            <label class="field-label">Current Weight (kg)</label>
-            <input class="field-input" id="inp-wt" type="number" step="0.1" placeholder="78.7">
-          </div>
-          <div class="field-group">
-            <label class="field-label">5K Time (mm:ss)</label>
-            <input class="field-input" id="inp-5k" type="text" placeholder="38:30">
-          </div>
+        <div class="ctitle">📆 This Week</div>
+        <div style="font-size:12px;line-height:2.1">
+          <span style="background:#f0fdf4;color:#166534;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700">SUN</span>&nbsp;🏃 Cardio — Base Run &nbsp;
+          <span style="background:#eff6ff;color:#1d4ed8;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700">MON</span>&nbsp;💪 Push<br>
+          <span style="background:#f0fdf4;color:#166534;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700">TUE</span>&nbsp;🏃 Cardio — Intervals &nbsp;
+          <span style="background:#eff6ff;color:#1d4ed8;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700">WED</span>&nbsp;💪 Pull<br>
+          <span style="background:#f0fdf4;color:#166534;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700">THU</span>&nbsp;🏃 Cardio — Tempo &nbsp;
+          <span style="background:#eff6ff;color:#1d4ed8;padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700">FRI</span>&nbsp;💪 Legs<br>
+          <span style="background:var(--g1);color:var(--g6);padding:2px 7px;border-radius:20px;font-size:10px;font-weight:700">SAT</span>&nbsp;😴 Rest &amp; Recovery
         </div>
-        <button class="btn btnt" onclick="updateStats()">Update Stats</button>
       </div>
     </div>
   </div>
-  <div class="card">
-    <div class="ctitle">🗺️ 20-Week Transformation Roadmap</div>
-    <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:8px">
-      <div style="border-radius:8px;padding:12px;text-align:center;background:var(--tl);border:2px solid var(--teal)">
-        <div style="font-size:11px;font-weight:700;color:var(--navy)">Phase 1</div>
-        <div style="font-size:10px;color:var(--g6)">Weeks 1–4</div>
-        <div style="font-size:12px;font-weight:700;color:var(--teal);margin-top:4px">Foundation</div>
-        <div style="font-size:10px;color:var(--g6);margin-top:4px">5K target: 37 min</div>
+</div>
+
+<!-- ═══ FOOD LOG ═══ -->
+<div class="sec" id="sec-food">
+  <!-- Date strip -->
+  <div class="cal-strip">
+    <button class="btn btnn" style="padding:8px 12px" onclick="changeDay(-1)">‹ Prev</button>
+    <div class="cal-date-display">
+      <div class="cal-date-main" id="food-date-label">Today</div>
+      <div class="cal-date-sub" id="food-date-sub"></div>
+    </div>
+    <button class="btn btnn" style="padding:8px 12px" onclick="changeDay(1)">Next ›</button>
+  </div>
+
+  <!-- Calorie summary -->
+  <div class="card" id="food-cal-card">
+    <div class="ctitle">📊 Daily Nutrition Summary</div>
+    <div class="cal-ring-wrap">
+      <div class="cal-numbers">
+        <div class="cal-big" id="fc-kcal">0</div>
+        <div class="cal-sub">kcal of 2,450 target</div>
+        <div class="cal-remaining" id="fc-remaining" style="color:var(--gr)">2,450 kcal remaining</div>
       </div>
-      <div style="border-radius:8px;padding:12px;text-align:center;background:var(--g1);border:1px solid var(--g2)">
-        <div style="font-size:11px;font-weight:700;color:var(--navy)">Phase 2</div>
-        <div style="font-size:10px;color:var(--g6)">Weeks 5–8</div>
-        <div style="font-size:12px;font-weight:700;color:var(--or);margin-top:4px">Speed Dev.</div>
-        <div style="font-size:10px;color:var(--g6);margin-top:4px">5K target: 35 min ★</div>
-      </div>
-      <div style="border-radius:8px;padding:12px;text-align:center;background:var(--g1);border:1px solid var(--g2)">
-        <div style="font-size:11px;font-weight:700;color:var(--navy)">Phase 3</div>
-        <div style="font-size:10px;color:var(--g6)">Weeks 9–12</div>
-        <div style="font-size:12px;font-weight:700;color:var(--bl);margin-top:4px">Threshold</div>
-        <div style="font-size:10px;color:var(--g6);margin-top:4px">5K target: 33 min</div>
-      </div>
-      <div style="border-radius:8px;padding:12px;text-align:center;background:var(--g1);border:1px solid var(--g2)">
-        <div style="font-size:11px;font-weight:700;color:var(--navy)">Phase 4</div>
-        <div style="font-size:10px;color:var(--g6)">Weeks 13–16</div>
-        <div style="font-size:12px;font-weight:700;color:var(--pu);margin-top:4px">VO2 Max</div>
-        <div style="font-size:10px;color:var(--g6);margin-top:4px">5K target: 31 min</div>
-      </div>
-      <div style="border-radius:8px;padding:12px;text-align:center;background:var(--g1);border:1px solid var(--g2)">
-        <div style="font-size:11px;font-weight:700;color:var(--navy)">Phase 5</div>
-        <div style="font-size:10px;color:var(--g6)">Weeks 17–20</div>
-        <div style="font-size:12px;font-weight:700;color:var(--gr);margin-top:4px">Peak</div>
-        <div style="font-size:10px;color:var(--g6);margin-top:4px">5K target: 30 min ★★</div>
+      <div style="text-align:right">
+        <div style="font-size:11px;color:var(--g4)">Protein</div>
+        <div style="font-size:18px;font-weight:700;color:var(--gr)" id="fc-prot">0g</div>
+        <div style="font-size:10px;color:var(--g4)">of 160g</div>
       </div>
     </div>
+    <div class="cal-progress-bg"><div class="cal-progress-fill" id="fc-cal-bar" style="width:0%"></div></div>
+    <div class="g3" style="gap:8px;margin-top:12px">
+      <div class="macro-row" style="margin-bottom:0">
+        <div class="macro-label"><span>Protein</span><span id="mp-val">0/160g</span></div>
+        <div class="macro-bar-bg"><div class="macro-bar-fill" id="mp-bar" style="width:0%;background:var(--gr)"></div></div>
+      </div>
+      <div class="macro-row" style="margin-bottom:0">
+        <div class="macro-label"><span>Carbs</span><span id="mc-val">0/270g</span></div>
+        <div class="macro-bar-bg"><div class="macro-bar-fill" id="mc-bar" style="width:0%;background:var(--bl)"></div></div>
+      </div>
+      <div class="macro-row" style="margin-bottom:0">
+        <div class="macro-label"><span>Fat</span><span id="mf-val">0/82g</span></div>
+        <div class="macro-bar-bg"><div class="macro-bar-fill" id="mf-bar" style="width:0%;background:var(--yl)"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Add food buttons -->
+  <div style="display:flex;gap:10px;margin-bottom:14px">
+    <button class="big-btn btnt" onclick="triggerCamera()"><span class="icon">📸</span><span>Photo</span></button>
+    <button class="big-btn btnn" onclick="showTextInput()"><span class="icon">✏️</span><span>Type Food</span></button>
+  </div>
+  <input type="file" accept="image/*" capture="environment" id="food-cam" style="display:none" onchange="handleFoodPhoto(this)">
+
+  <!-- Text input -->
+  <div id="food-text-box" style="display:none" class="card">
+    <div class="ctitle">✏️ Describe your food</div>
+    <textarea id="food-text-area" class="field-input" rows="3" placeholder="e.g. 2 scrambled eggs, 1 slice toast, small orange juice, 1 tsp butter"></textarea>
+    <div style="display:flex;gap:8px;margin-top:10px">
+      <button class="btn btnt" style="flex:1" onclick="runTextAnalysis()">🤖 Analyze</button>
+      <button class="btn btn-ghost" style="flex:1" onclick="hideTextInput()">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div id="food-loading" style="display:none" class="card" style="text-align:center;padding:32px">
+    <div style="text-align:center;padding:16px">
+      <div class="spinner" style="margin-bottom:12px"></div>
+      <div style="font-weight:600;color:var(--teal)">Gemini is analyzing your food...</div>
+      <div style="font-size:12px;color:var(--g4);margin-top:4px">Usually takes 3–5 seconds</div>
+    </div>
+  </div>
+
+  <!-- Analysis result (confirm) -->
+  <div id="food-result-box" style="display:none">
+    <div class="confirm-card">
+      <div class="confirm-title" id="food-result-title">📊 Analysis Result</div>
+      <div id="food-result-items" class="food-item-list"></div>
+      <div class="food-macros" id="food-result-macros" style="margin-top:10px"></div>
+    </div>
+    <div style="display:flex;gap:8px;margin-bottom:14px">
+      <button class="btn btnt" style="flex:1" onclick="confirmFood()">✅ Add to Log</button>
+      <button class="btn btn-ghost" style="flex:1" onclick="discardFood()">✏️ Discard</button>
+    </div>
+  </div>
+
+  <!-- Meals list -->
+  <div class="card">
+    <div class="ctitle">🍽️ Meals Logged</div>
+    <div id="food-entries"></div>
   </div>
 </div>
 
@@ -247,74 +368,59 @@ tr:hover td{background:var(--tl)}
     <div class="ctitle">📅 Your Training Week</div>
     <div class="wk" id="week-grid"></div>
   </div>
-  <div class="note"><strong>⚠️ F45 Note (until July 2026):</strong> On Strength days (Mon/Wed/Fri) you attend F45 Palm Jumeirah which programs the session. Use the Push/Pull/Legs pages as your reference for muscle focus &amp; exercise technique. After July, follow the full prescribed workouts in this tracker at your new gym.</div>
+  <div class="note"><strong>⚠️ F45 (until July 2026):</strong> On Strength days the F45 class programs your session. Use Push/Pull/Legs tabs as muscle-group reference. From August, follow the full prescription at your new gym.</div>
 </div>
 
-<!-- ═══ PUSH (MONDAY) ═══ -->
+<!-- ═══ PUSH (MON) ═══ -->
 <div class="sec" id="sec-push">
-  <div class="note"><strong>⚠️ Until July 2026:</strong> Attend F45 class. Focus on Chest, Shoulders &amp; Triceps movements. From August onwards, run this full session at your gym.</div>
+  <div class="note"><strong>⚠️ Until July 2026:</strong> Attend F45. Focus on Chest · Shoulders · Triceps movements. From August follow the full session below.</div>
   <div class="card">
-    <div class="ctitle">💪 Monday — Push Day | Chest · Shoulders · Triceps</div>
-    <div class="info"><strong>Goal:</strong> Build chest width &amp; shoulder size. Progressive overload — add 1.25–2.5 kg per week when you complete all reps with good form. Warm-up: 10 min mobility + 2 light warm-up sets before first exercise.</div>
+    <div class="ctitle">💪 Monday — Push | Chest · Shoulders · Triceps</div>
+    <div class="info"><strong>Warm-up:</strong> 10 min mobility + 2 light warm-up sets before first exercise. Add 1.25–2.5 kg when all reps complete with good form.</div>
     <div id="push-exercises"></div>
   </div>
 </div>
 
-<!-- ═══ PULL (WEDNESDAY) ═══ -->
+<!-- ═══ PULL (WED) ═══ -->
 <div class="sec" id="sec-pull">
-  <div class="note"><strong>⚠️ Until July 2026:</strong> Attend F45 class. Focus on Back &amp; Biceps movements. From August onwards, run this full session at your gym.</div>
+  <div class="note"><strong>⚠️ Until July 2026:</strong> Attend F45. Focus on Back &amp; Biceps movements.</div>
   <div class="card">
-    <div class="ctitle">💪 Wednesday — Pull Day | Back · Biceps · Rear Delts</div>
-    <div class="info"><strong>Goal:</strong> Build a strong back to support posture &amp; muscle mass. Pull-ups are your north star — track max reps each week. Warm-up: 10 min mobility + band pull-aparts × 20.</div>
+    <div class="ctitle">💪 Wednesday — Pull | Back · Biceps · Rear Delts</div>
+    <div class="info"><strong>Warm-up:</strong> 10 min mobility + band pull-aparts × 20. Track pull-up max reps weekly as your key KPI.</div>
     <div id="pull-exercises"></div>
   </div>
 </div>
 
-<!-- ═══ LEGS (FRIDAY) ═══ -->
+<!-- ═══ LEGS (FRI) ═══ -->
 <div class="sec" id="sec-legs">
-  <div class="note"><strong>⚠️ Until July 2026:</strong> Attend F45 class. Focus on Squat, Deadlift &amp; Lunge patterns. From August onwards, run this full session at your gym.</div>
+  <div class="note"><strong>⚠️ Until July 2026:</strong> Attend F45. Focus on Squat, Deadlift &amp; Lunge patterns.</div>
   <div class="card">
-    <div class="ctitle">💪 Friday — Leg Day | Quads · Hamstrings · Glutes · Calves</div>
-    <div class="info"><strong>Goal:</strong> Legs = largest muscle group = most metabolic impact. Squat &amp; RDL are your primary movers. Heavy legs = faster fat loss. Warm-up: 5 min bike/row + 2 goblet squats + hip circles.</div>
+    <div class="ctitle">💪 Friday — Legs | Quads · Hamstrings · Glutes · Calves</div>
+    <div class="info"><strong>Warm-up:</strong> 5 min bike/row + 2 goblet squats + hip circles. Legs = biggest muscle group = most fat burn.</div>
     <div id="legs-exercises"></div>
   </div>
 </div>
 
-<!-- ═══ CARDIO SUNDAY ═══ -->
+<!-- ═══ CARDIO SUN ═══ -->
 <div class="sec" id="sec-csun">
   <div class="card">
     <div class="ctitle">🏃 Sunday — Base / Long Easy Run</div>
-    <div class="info"><strong>Purpose:</strong> Build aerobic base, improve fat oxidation, active recovery from Friday legs. This is your lowest-intensity run of the week — never push the pace here.</div>
+    <div class="info"><strong>Purpose:</strong> Aerobic base, fat oxidation, active recovery from Friday. Never push pace here — conversational effort throughout.</div>
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">
       <div class="pt hi"><div class="pv">50–60</div><div class="pl">Duration (min)</div></div>
-      <div class="pt"><div class="pv">65–70%</div><div class="pl">Max HR Target</div></div>
+      <div class="pt"><div class="pv">65–70%</div><div class="pl">Max HR</div></div>
       <div class="pt"><div class="pv">117–126</div><div class="pl">BPM (age 40)</div></div>
-      <div class="pt"><div class="pv">7:30–8:30</div><div class="pl">Min/km Pace</div></div>
+      <div class="pt"><div class="pv">7:30–8:30</div><div class="pl">Min/km</div></div>
     </div>
-    <div class="ctitle">📋 Session Structure</div>
-    <table>
-      <tr><th>Segment</th><th>Duration</th><th>Effort</th><th>Pace (min/km)</th><th>Notes</th></tr>
-      <tr><td>Warm-up Walk</td><td>5 min</td><td>Very Easy</td><td>—</td><td>Activate calves, swing arms</td></tr>
-      <tr><td>Easy Run</td><td>40–50 min</td><td>Conversational</td><td>7:30–8:30</td><td>You should be able to hold a full conversation. If you can't, slow down.</td></tr>
-      <tr><td>Cool-down Walk</td><td>5 min</td><td>Easy</td><td>—</td><td>Lower HR gradually, begin recovery</td></tr>
-      <tr><td>Stretching</td><td>5–10 min</td><td>—</td><td>—</td><td>Calves, hip flexors, quads, hamstrings</td></tr>
+    <table><tr><th>Segment</th><th>Duration</th><th>Pace</th><th>Notes</th></tr>
+      <tr><td>Walk warm-up</td><td>5 min</td><td>—</td><td>Activate calves, swing arms</td></tr>
+      <tr><td>Easy Run</td><td>40–50 min</td><td>7:30–8:30 /km</td><td>Should be able to hold a full conversation</td></tr>
+      <tr><td>Cool-down walk</td><td>5 min</td><td>—</td><td>Lower HR, begin recovery</td></tr>
+      <tr><td>Stretching</td><td>5–10 min</td><td>—</td><td>Calves, hip flexors, quads, hamstrings</td></tr>
     </table>
-    <div style="margin-top:14px">
-      <div class="ctitle">📏 Phase Distance Targets</div>
-      <table>
-        <tr><th>Phase</th><th>Weeks</th><th>Target Distance</th><th>Pace</th><th>Focus</th></tr>
-        <tr><td>1 — Foundation</td><td>1–4</td><td>5–6 km</td><td>8:00–8:30 /km</td><td>Build habit, don't injure</td></tr>
-        <tr><td>2 — Build</td><td>5–8</td><td>6–7 km</td><td>7:45–8:00 /km</td><td>Slightly longer each week</td></tr>
-        <tr><td>3 — Threshold</td><td>9–12</td><td>7–8 km</td><td>7:30–7:45 /km</td><td>Duration increases</td></tr>
-        <tr><td>4 — Endurance</td><td>13–16</td><td>8–9 km</td><td>7:15–7:30 /km</td><td>Long run for aerobic capacity</td></tr>
-        <tr><td>5 — Peak</td><td>17–20</td><td>7–8 km</td><td>7:00–7:15 /km</td><td>Taper before race tests</td></tr>
-      </table>
-    </div>
-    <a class="vbtn" href="https://www.youtube.com/results?search_query=zone+2+running+training+easy+run+heart+rate+fat+burn" target="_blank">▶ Zone 2 Running Guide</a>
-    <a class="vbtn" style="background:#1a2b4a" href="https://www.youtube.com/results?search_query=how+to+run+slow+easy+pace+zone+2+aerobic+base+building" target="_blank">▶ Aerobic Base Building</a>
+    <a class="vbtn" href="https://www.youtube.com/results?search_query=zone+2+running+aerobic+base+fat+burn+easy+run" target="_blank">▶ Zone 2 Guide</a>
   </div>
-  <div class="card">
-    <div class="ctitle">📝 Log This Run</div>
+  <div class="card"><div class="ctitle">📝 Log This Run</div>
     <div class="g3" style="gap:10px;margin-bottom:10px">
       <div class="field-group"><label class="field-label">Date</label><input class="field-input" id="sun-date" type="date"></div>
       <div class="field-group"><label class="field-label">Distance (km)</label><input class="field-input" id="sun-dist" type="number" step="0.1" placeholder="5.5"></div>
@@ -323,54 +429,39 @@ tr:hover td{background:var(--tl)}
     <div class="g3" style="gap:10px;margin-bottom:10px">
       <div class="field-group"><label class="field-label">Avg HR (bpm)</label><input class="field-input" id="sun-hr" type="number" placeholder="120"></div>
       <div class="field-group"><label class="field-label">Feeling (1–10)</label><input class="field-input" id="sun-feel" type="number" min="1" max="10" placeholder="7"></div>
-      <div class="field-group"><label class="field-label">Notes</label><input class="field-input" id="sun-notes" type="text" placeholder="Felt good, easy pace..."></div>
+      <div class="field-group"><label class="field-label">Notes</label><input class="field-input" id="sun-notes" type="text" placeholder="Felt strong..."></div>
     </div>
     <button class="btn btnt" onclick="logCardio('sun')">💾 Save Run</button>
     <div id="sun-log-table" style="margin-top:14px"></div>
   </div>
 </div>
 
-<!-- ═══ CARDIO TUESDAY ═══ -->
+<!-- ═══ CARDIO TUE ═══ -->
 <div class="sec" id="sec-ctue">
   <div class="card">
     <div class="ctitle">🏃 Tuesday — Speed Intervals (VO2 Max)</div>
-    <div class="info"><strong>Purpose:</strong> This is your most important run for improving 5K time &amp; VO2 max. Interval training at 80–95% max HR forces your body to adapt to faster speeds. This session is meant to be uncomfortable.</div>
+    <div class="info"><strong>Purpose:</strong> Fastest route to improving 5K time &amp; VO2 max. These are meant to be uncomfortable — 80–92% max HR during work intervals.</div>
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">
       <div class="pt hi"><div class="pv">35–45</div><div class="pl">Duration (min)</div></div>
-      <div class="pt" style="border-color:var(--rd)"><div class="pv">80–92%</div><div class="pl">Max HR (intervals)</div></div>
-      <div class="pt"><div class="pv">144–166</div><div class="pl">BPM (age 40)</div></div>
-      <div class="pt"><div class="pv">~500</div><div class="pl">Calories Est.</div></div>
+      <div class="pt" style="border-color:var(--rd)"><div class="pv">80–92%</div><div class="pl">HR (intervals)</div></div>
+      <div class="pt"><div class="pv">144–166</div><div class="pl">BPM target</div></div>
+      <div class="pt"><div class="pv">~500</div><div class="pl">Calories</div></div>
     </div>
-    <div class="ctitle">📋 Phase-by-Phase Interval Plan</div>
-    <table>
-      <tr><th>Phase</th><th>Weeks</th><th>Workout</th><th>Interval Pace</th><th>Recovery</th><th>Total Hard Dist.</th></tr>
-      <tr><td style="font-weight:700;color:var(--teal)">Phase 1</td><td>1–4</td><td>4 × 800m + 10min wu/cd</td><td>6:45 /km</td><td>90s easy jog</td><td>3.2 km</td></tr>
-      <tr><td style="font-weight:700;color:var(--or)">Phase 2</td><td>5–8</td><td>6 × 800m + 10min wu/cd</td><td>6:30 /km</td><td>90s easy jog</td><td>4.8 km</td></tr>
-      <tr><td style="font-weight:700;color:var(--bl)">Phase 3</td><td>9–12</td><td>5 × 1000m + 10min wu/cd</td><td>6:15 /km</td><td>2 min easy jog</td><td>5.0 km</td></tr>
-      <tr><td style="font-weight:700;color:var(--pu)">Phase 4</td><td>13–16</td><td>6 × 1000m + 10min wu/cd</td><td>6:00 /km</td><td>90s easy jog</td><td>6.0 km</td></tr>
-      <tr><td style="font-weight:700;color:var(--gr)">Phase 5</td><td>17–20</td><td>8 × 400m + 10min wu/cd</td><td>5:45 /km</td><td>90s easy jog</td><td>3.2 km fast</td></tr>
+    <table><tr><th>Phase</th><th>Weeks</th><th>Workout</th><th>Pace</th><th>Recovery</th></tr>
+      <tr><td style="font-weight:700;color:var(--teal)">Phase 1</td><td>1–4</td><td>4 × 800m</td><td>6:45 /km</td><td>90s easy jog</td></tr>
+      <tr><td style="font-weight:700;color:var(--or)">Phase 2</td><td>5–8</td><td>6 × 800m</td><td>6:30 /km</td><td>90s easy jog</td></tr>
+      <tr><td style="font-weight:700;color:var(--bl)">Phase 3</td><td>9–12</td><td>5 × 1000m</td><td>6:15 /km</td><td>2 min jog</td></tr>
+      <tr><td style="font-weight:700;color:var(--pu)">Phase 4</td><td>13–16</td><td>6 × 1000m</td><td>6:00 /km</td><td>90s jog</td></tr>
+      <tr><td style="font-weight:700;color:var(--gr)">Phase 5</td><td>17–20</td><td>8 × 400m</td><td>5:45 /km</td><td>90s jog</td></tr>
     </table>
-    <div style="margin-top:14px">
-      <div class="ctitle">🔥 VO2 Max Intervals (After Week 8)</div>
-      <div class="info"><strong>What are VO2 Max Intervals?</strong> 4–6 minute efforts at ~95% max HR (171 bpm for you). These are harder than regular intervals. Do 3–5 reps with equal rest. Add 1× per month from Week 9.</div>
-      <table>
-        <tr><th>Rep</th><th>Duration</th><th>Effort</th><th>Target HR</th><th>Recovery</th></tr>
-        <tr><td>1</td><td>4 min hard</td><td>Very Hard — can barely speak</td><td>168–174 bpm</td><td>4 min easy walk/jog</td></tr>
-        <tr><td>2</td><td>4 min hard</td><td>Very Hard</td><td>168–174 bpm</td><td>4 min easy walk/jog</td></tr>
-        <tr><td>3</td><td>4 min hard</td><td>Very Hard</td><td>168–174 bpm</td><td>4 min easy walk/jog</td></tr>
-        <tr><td>4</td><td>4 min hard</td><td>Very Hard</td><td>168–174 bpm</td><td>4 min easy walk/jog</td></tr>
-      </table>
-    </div>
-    <a class="vbtn" href="https://www.youtube.com/results?search_query=800m+interval+running+workout+how+to+train+5k+speed" target="_blank">▶ 800m Interval Tutorial</a>
-    <a class="vbtn" style="background:#1a2b4a" href="https://www.youtube.com/results?search_query=vo2+max+intervals+running+improve+fitness+workout" target="_blank">▶ VO2 Max Interval Guide</a>
-    <a class="vbtn" style="background:var(--pu)" href="https://www.youtube.com/results?search_query=how+to+improve+vo2+max+running+training+guide" target="_blank">▶ How to Improve VO2 Max</a>
+    <a class="vbtn" href="https://www.youtube.com/results?search_query=800m+interval+running+how+to+train+5k+speed" target="_blank">▶ Interval Tutorial</a>
+    <a class="vbtn" style="background:var(--pu)" href="https://www.youtube.com/results?search_query=vo2+max+intervals+running+improve" target="_blank">▶ VO2 Max Guide</a>
   </div>
-  <div class="card">
-    <div class="ctitle">📝 Log This Run</div>
+  <div class="card"><div class="ctitle">📝 Log This Session</div>
     <div class="g3" style="gap:10px;margin-bottom:10px">
       <div class="field-group"><label class="field-label">Date</label><input class="field-input" id="tue-date" type="date"></div>
-      <div class="field-group"><label class="field-label">Intervals Completed</label><input class="field-input" id="tue-reps" type="number" placeholder="4"></div>
-      <div class="field-group"><label class="field-label">Interval Pace (min/km)</label><input class="field-input" id="tue-pace" type="text" placeholder="6:45"></div>
+      <div class="field-group"><label class="field-label">Intervals Done</label><input class="field-input" id="tue-reps" type="number" placeholder="4"></div>
+      <div class="field-group"><label class="field-label">Interval Pace</label><input class="field-input" id="tue-pace" type="text" placeholder="6:45"></div>
     </div>
     <div class="g3" style="gap:10px;margin-bottom:10px">
       <div class="field-group"><label class="field-label">Total Time (min)</label><input class="field-input" id="tue-time" type="number" placeholder="40"></div>
@@ -382,44 +473,31 @@ tr:hover td{background:var(--tl)}
   </div>
 </div>
 
-<!-- ═══ CARDIO THURSDAY ═══ -->
+<!-- ═══ CARDIO THU ═══ -->
 <div class="sec" id="sec-cthu">
   <div class="card">
-    <div class="ctitle">🏃 Thursday — Tempo Run (Lactate Threshold)</div>
-    <div class="info"><strong>Purpose:</strong> Tempo runs raise your lactate threshold — the pace at which your body switches from aerobic to anaerobic. This directly improves your 5K time. It should feel "comfortably hard" — a 7/10 effort. Not easy, not all-out.</div>
+    <div class="ctitle">🏃 Thursday — Tempo Run</div>
+    <div class="info"><strong>Purpose:</strong> Raises your lactate threshold — the pace at which you "hit the wall." Should feel comfortably hard (7/10). Can say short sentences but not hold conversation.</div>
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">
       <div class="pt hi"><div class="pv">40–50</div><div class="pl">Duration (min)</div></div>
-      <div class="pt"><div class="pv">75–85%</div><div class="pl">Max HR Target</div></div>
-      <div class="pt"><div class="pv">135–153</div><div class="pl">BPM (age 40)</div></div>
-      <div class="pt"><div class="pv">~450</div><div class="pl">Calories Est.</div></div>
+      <div class="pt"><div class="pv">75–85%</div><div class="pl">Max HR</div></div>
+      <div class="pt"><div class="pv">135–153</div><div class="pl">BPM target</div></div>
+      <div class="pt"><div class="pv">~450</div><div class="pl">Calories</div></div>
     </div>
-    <div class="ctitle">📋 Tempo Session Structure</div>
-    <table>
-      <tr><th>Segment</th><th>Duration</th><th>HR Zone</th><th>Phase 1 Pace</th><th>Phase 3+ Pace</th><th>Feel</th></tr>
-      <tr><td>Warm-up Jog</td><td>10 min</td><td>65–70%</td><td>8:00 /km</td><td>7:30 /km</td><td>Easy — conversational</td></tr>
-      <tr><td>Tempo Block</td><td>20–25 min</td><td>75–85%</td><td>7:00–7:15 /km</td><td>6:20–6:30 /km</td><td>Hard but controlled — can say short sentences</td></tr>
-      <tr><td>Cool-down Jog</td><td>10 min</td><td>65%</td><td>8:00 /km</td><td>7:30 /km</td><td>Easy</td></tr>
+    <table><tr><th>Phase</th><th>Weeks</th><th>Tempo Block</th><th>Target Pace</th></tr>
+      <tr><td>Phase 1</td><td>1–4</td><td>2×10 min (2 min easy between)</td><td>7:00–7:15 /km</td></tr>
+      <tr><td>Phase 2</td><td>5–8</td><td>20 min continuous</td><td>6:45–7:00 /km</td></tr>
+      <tr><td>Phase 3</td><td>9–12</td><td>22 min continuous</td><td>6:30–6:45 /km</td></tr>
+      <tr><td>Phase 4</td><td>13–16</td><td>25 min continuous</td><td>6:15–6:30 /km</td></tr>
+      <tr><td>Phase 5</td><td>17–20</td><td>20 min sharp</td><td>6:00–6:10 /km</td></tr>
     </table>
-    <div style="margin-top:14px">
-      <div class="ctitle">📈 Tempo Pace Progression</div>
-      <table>
-        <tr><th>Phase</th><th>Weeks</th><th>Tempo Duration</th><th>Target Pace</th><th>5K Impact</th></tr>
-        <tr><td>Phase 1</td><td>1–4</td><td>2 × 10 min (2 min easy between)</td><td>7:00–7:15 /km</td><td>Baseline development</td></tr>
-        <tr><td>Phase 2</td><td>5–8</td><td>20 min continuous</td><td>6:45–7:00 /km</td><td>→ 35 min 5K possible</td></tr>
-        <tr><td>Phase 3</td><td>9–12</td><td>22 min continuous</td><td>6:30–6:45 /km</td><td>→ 33 min 5K possible</td></tr>
-        <tr><td>Phase 4</td><td>13–16</td><td>25 min continuous</td><td>6:15–6:30 /km</td><td>→ 31 min 5K possible</td></tr>
-        <tr><td>Phase 5</td><td>17–20</td><td>20 min continuous (sharp)</td><td>6:00–6:10 /km</td><td>→ 30 min 5K ★</td></tr>
-      </table>
-    </div>
-    <a class="vbtn" href="https://www.youtube.com/results?search_query=tempo+run+how+to+lactate+threshold+training+5k" target="_blank">▶ Tempo Run Guide</a>
-    <a class="vbtn" style="background:#1a2b4a" href="https://www.youtube.com/results?search_query=lactate+threshold+training+running+improve+pace" target="_blank">▶ Lactate Threshold Explained</a>
+    <a class="vbtn" href="https://www.youtube.com/results?search_query=tempo+run+lactate+threshold+training+5k+improve" target="_blank">▶ Tempo Run Guide</a>
   </div>
-  <div class="card">
-    <div class="ctitle">📝 Log This Run</div>
+  <div class="card"><div class="ctitle">📝 Log This Run</div>
     <div class="g3" style="gap:10px;margin-bottom:10px">
       <div class="field-group"><label class="field-label">Date</label><input class="field-input" id="thu-date" type="date"></div>
       <div class="field-group"><label class="field-label">Tempo Distance (km)</label><input class="field-input" id="thu-dist" type="number" step="0.1" placeholder="3.0"></div>
-      <div class="field-group"><label class="field-label">Avg Tempo Pace (min/km)</label><input class="field-input" id="thu-pace" type="text" placeholder="7:00"></div>
+      <div class="field-group"><label class="field-label">Avg Tempo Pace</label><input class="field-input" id="thu-pace" type="text" placeholder="7:00"></div>
     </div>
     <div class="g3" style="gap:10px;margin-bottom:10px">
       <div class="field-group"><label class="field-label">Total Time (min)</label><input class="field-input" id="thu-time" type="number" placeholder="45"></div>
@@ -438,311 +516,379 @@ tr:hover td{background:var(--tl)}
       <div>
         <div style="font-size:11px;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.5px">Estimated VO2 Max</div>
         <div class="vo2val" id="vo2-display">~30</div>
-        <div style="font-size:12px;color:rgba(255,255,255,.7)">ml/kg/min — Below Average for age 40</div>
+        <div style="font-size:12px;color:rgba(255,255,255,.7)" id="vo2-cat">ml/kg/min — Below Average for age 40</div>
         <div class="vo2bar"><div class="vo2fill" id="vo2-bar" style="width:45%"></div></div>
-        <div style="font-size:11px;color:rgba(255,255,255,.5)">Scale: 25 (poor) → 35 (avg) → 45 (good) → 55 (excellent)</div>
+        <div style="font-size:11px;color:rgba(255,255,255,.4)">25 (poor) → 35 (avg) → 45 (good) → 55 (excellent)</div>
       </div>
       <div style="text-align:right">
         <div style="font-size:11px;color:rgba(255,255,255,.6)">Current 5K</div>
-        <div style="font-size:32px;font-weight:700;color:#fff" id="vo2-5k-display">38:30</div>
+        <div style="font-size:30px;font-weight:700;color:#fff" id="vo2-5k">38:30</div>
         <div style="font-size:11px;color:rgba(255,255,255,.6)">Target: 30:00</div>
-        <div style="margin-top:8px">
-          <label style="font-size:11px;color:rgba(255,255,255,.6);display:block;margin-bottom:4px">Update 5K time:</label>
-          <input id="vo2-5k-input" style="padding:6px 10px;border-radius:6px;border:none;font-size:13px;width:110px" type="text" placeholder="38:30">
-          <button class="btn btnt" style="margin-left:6px" onclick="update5K()">Update</button>
+        <div style="margin-top:8px;display:flex;gap:6px;align-items:center">
+          <input id="vo2-input" style="padding:6px 10px;border-radius:6px;border:none;font-size:13px;width:90px" type="text" placeholder="38:30">
+          <button class="btn btnt" style="padding:7px 12px;font-size:12px" onclick="update5K()">Update</button>
         </div>
       </div>
     </div>
   </div>
   <div class="card">
-    <div class="ctitle">🏃 20-Week 5K Improvement Plan: 38 min → 35 min → 30 min</div>
-    <div class="note"><strong>Your starting pace:</strong> ~7:42 /km &nbsp;|&nbsp; <strong>Target 1 pace (35 min):</strong> 7:00 /km &nbsp;|&nbsp; <strong>Target 2 pace (30 min):</strong> 6:00 /km</div>
-    <table>
-      <tr><th>Week</th><th>Phase</th><th>Sunday — Base Run</th><th>Tuesday — Intervals</th><th>Thursday — Tempo</th><th>5K Test</th></tr>
-      <tr><td style="font-weight:700">1</td><td rowspan="4" style="font-weight:700;color:var(--teal);background:var(--tl)">Phase 1<br>Foundation</td><td>5 km @ 8:15 /km</td><td>4 × 800m @ 6:45 /km, 90s recovery</td><td>2×10min @ 7:15, 2min easy between</td><td>—</td></tr>
-      <tr><td style="font-weight:700">2</td><td>5.5 km @ 8:10 /km</td><td>4 × 800m @ 6:40 /km, 90s recovery</td><td>2×10min @ 7:10, 2min easy between</td><td>—</td></tr>
-      <tr><td style="font-weight:700">3</td><td>6 km @ 8:00 /km</td><td>5 × 800m @ 6:40 /km, 90s recovery</td><td>2×12min @ 7:05, 2min easy between</td><td>—</td></tr>
-      <tr><td style="font-weight:700">4</td><td>6 km @ 7:55 /km</td><td>5 × 800m @ 6:35 /km, 90s recovery</td><td>22min continuous @ 7:05 /km</td><td>📍 <strong>TEST 5K</strong></td></tr>
-      <tr><td style="font-weight:700">5</td><td rowspan="4" style="font-weight:700;color:var(--or);background:#fff7ed">Phase 2<br>Speed Dev.</td><td>6.5 km @ 7:50 /km</td><td>5 × 800m @ 6:30 /km, 90s recovery</td><td>22min continuous @ 7:00 /km</td><td>—</td></tr>
-      <tr><td style="font-weight:700">6</td><td>7 km @ 7:45 /km</td><td>6 × 800m @ 6:30 /km, 90s recovery</td><td>2×12min @ 6:55, 90s between</td><td>—</td></tr>
-      <tr><td style="font-weight:700">7</td><td>7 km @ 7:40 /km</td><td>6 × 800m @ 6:25 /km, 90s recovery</td><td>24min continuous @ 6:55 /km</td><td>—</td></tr>
-      <tr><td style="font-weight:700">8</td><td>7 km @ 7:35 /km</td><td>6 × 800m @ 6:20 /km, 90s recovery</td><td>20min continuous @ 6:50 /km</td><td>📍 <strong>TEST 5K ★ Target: 35 min</strong></td></tr>
-      <tr><td style="font-weight:700">9</td><td rowspan="4" style="font-weight:700;color:var(--bl);background:#eff6ff">Phase 3<br>Threshold</td><td>7.5 km @ 7:30 /km</td><td>5 × 1000m @ 6:15 /km, 2min recovery</td><td>22min continuous @ 6:40 /km</td><td>—</td></tr>
-      <tr><td style="font-weight:700">10</td><td>7.5 km @ 7:25 /km</td><td>5 × 1000m @ 6:10 /km, 2min recovery</td><td>24min continuous @ 6:35 /km</td><td>—</td></tr>
-      <tr><td style="font-weight:700">11</td><td>8 km @ 7:20 /km</td><td>6 × 1000m @ 6:10 /km, 2min recovery</td><td>25min continuous @ 6:30 /km</td><td>—</td></tr>
-      <tr><td style="font-weight:700">12</td><td>8 km @ 7:15 /km</td><td>6 × 1000m @ 6:05 /km, 2min recovery</td><td>20min sharp @ 6:25 /km</td><td>📍 <strong>TEST 5K</strong></td></tr>
-      <tr><td style="font-weight:700">13</td><td rowspan="4" style="font-weight:700;color:var(--pu);background:#f5f3ff">Phase 4<br>VO2 Max</td><td>8.5 km @ 7:10 /km</td><td>4×4min VO2max effort (~170bpm), 4min recovery</td><td>25min continuous @ 6:20 /km</td><td>—</td></tr>
-      <tr><td style="font-weight:700">14</td><td>8.5 km @ 7:05 /km</td><td>5×4min VO2max effort, 4min recovery</td><td>25min continuous @ 6:15 /km</td><td>—</td></tr>
-      <tr><td style="font-weight:700">15</td><td>9 km @ 7:00 /km</td><td>5×4min VO2max effort, 3.5min recovery</td><td>25min continuous @ 6:10 /km</td><td>—</td></tr>
-      <tr><td style="font-weight:700">16</td><td>9 km @ 6:55 /km</td><td>5×5min VO2max effort, 4min recovery</td><td>20min sharp @ 6:10 /km</td><td>📍 <strong>TEST 5K</strong></td></tr>
-      <tr><td style="font-weight:700">17</td><td rowspan="4" style="font-weight:700;color:var(--gr);background:#f0fdf4">Phase 5<br>Peak</td><td>8 km @ 6:50 /km</td><td>8 × 400m @ 5:50 /km, 90s recovery</td><td>20min continuous @ 6:05 /km</td><td>—</td></tr>
-      <tr><td style="font-weight:700">18</td><td>7.5 km @ 6:45 /km</td><td>10 × 400m @ 5:50 /km, 90s recovery</td><td>20min continuous @ 6:00 /km</td><td>—</td></tr>
-      <tr><td style="font-weight:700">19</td><td>6 km easy</td><td>6 × 400m @ 5:45 /km (sharpener)</td><td>15min @ 6:00 /km (fresh)</td><td>—</td></tr>
-      <tr><td style="font-weight:700">20</td><td>3 km easy (taper)</td><td>4 × 400m easy (shake out)</td><td>REST</td><td>📍 <strong>RACE DAY ★★ Target: 30 min</strong></td></tr>
+    <div class="ctitle">📈 20-Week 5K Plan: 38 min → 35 → 30 min</div>
+    <div class="note"><strong>Starting pace:</strong> ~7:42 /km &nbsp;|&nbsp; <strong>Target 1 (35 min):</strong> 7:00 /km &nbsp;|&nbsp; <strong>Target 2 (30 min):</strong> 6:00 /km</div>
+    <table><tr><th>Wk</th><th>Phase</th><th>Sunday — Base</th><th>Tuesday — Intervals</th><th>Thursday — Tempo</th><th>Test</th></tr>
+      <tr><td><strong>1</strong></td><td rowspan="4" style="color:var(--teal);font-weight:700">Foundation</td><td>5km @8:15</td><td>4×800m @6:45, 90s rec</td><td>2×10min @7:15</td><td>—</td></tr>
+      <tr><td><strong>2</strong></td><td>5.5km @8:10</td><td>4×800m @6:40, 90s rec</td><td>2×10min @7:10</td><td>—</td></tr>
+      <tr><td><strong>3</strong></td><td>6km @8:00</td><td>5×800m @6:40, 90s rec</td><td>2×12min @7:05</td><td>—</td></tr>
+      <tr><td><strong>4</strong></td><td>6km @7:55</td><td>5×800m @6:35, 90s rec</td><td>22min @7:05</td><td>📍 TEST</td></tr>
+      <tr><td><strong>5</strong></td><td rowspan="4" style="color:var(--or);font-weight:700">Speed Dev.</td><td>6.5km @7:50</td><td>5×800m @6:30, 90s rec</td><td>22min @7:00</td><td>—</td></tr>
+      <tr><td><strong>6</strong></td><td>7km @7:45</td><td>6×800m @6:30, 90s rec</td><td>2×12min @6:55</td><td>—</td></tr>
+      <tr><td><strong>7</strong></td><td>7km @7:40</td><td>6×800m @6:25, 90s rec</td><td>24min @6:55</td><td>—</td></tr>
+      <tr><td><strong>8</strong></td><td>7km @7:35</td><td>6×800m @6:20, 90s rec</td><td>20min @6:50</td><td>📍 <strong>35 min ★</strong></td></tr>
+      <tr><td><strong>9</strong></td><td rowspan="4" style="color:var(--bl);font-weight:700">Threshold</td><td>7.5km @7:30</td><td>5×1000m @6:15, 2min rec</td><td>22min @6:40</td><td>—</td></tr>
+      <tr><td><strong>10</strong></td><td>7.5km @7:25</td><td>5×1000m @6:10, 2min rec</td><td>24min @6:35</td><td>—</td></tr>
+      <tr><td><strong>11</strong></td><td>8km @7:20</td><td>6×1000m @6:10, 2min rec</td><td>25min @6:30</td><td>—</td></tr>
+      <tr><td><strong>12</strong></td><td>8km @7:15</td><td>6×1000m @6:05, 2min rec</td><td>20min @6:25</td><td>📍 TEST</td></tr>
+      <tr><td><strong>13</strong></td><td rowspan="4" style="color:var(--pu);font-weight:700">VO2 Max</td><td>8.5km @7:10</td><td>4×4min effort ~170bpm, 4min rec</td><td>25min @6:20</td><td>—</td></tr>
+      <tr><td><strong>14</strong></td><td>8.5km @7:05</td><td>5×4min effort, 4min rec</td><td>25min @6:15</td><td>—</td></tr>
+      <tr><td><strong>15</strong></td><td>9km @7:00</td><td>5×4min effort, 3.5min rec</td><td>25min @6:10</td><td>—</td></tr>
+      <tr><td><strong>16</strong></td><td>9km @6:55</td><td>5×5min effort, 4min rec</td><td>20min @6:10</td><td>📍 TEST</td></tr>
+      <tr><td><strong>17</strong></td><td rowspan="4" style="color:var(--gr);font-weight:700">Peak</td><td>8km @6:50</td><td>8×400m @5:50, 90s rec</td><td>20min @6:05</td><td>—</td></tr>
+      <tr><td><strong>18</strong></td><td>7.5km @6:45</td><td>10×400m @5:50, 90s rec</td><td>20min @6:00</td><td>—</td></tr>
+      <tr><td><strong>19</strong></td><td>6km easy</td><td>6×400m @5:45 (sharpener)</td><td>15min @6:00</td><td>—</td></tr>
+      <tr><td><strong>20</strong></td><td>3km easy (taper)</td><td>4×400m easy (shake out)</td><td>REST</td><td>🏁 <strong>RACE 30min ★★</strong></td></tr>
     </table>
-    <div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">
-      <a class="vbtn" href="https://www.youtube.com/results?search_query=how+to+run+faster+5k+training+plan+tips" target="_blank">▶ 5K Training Guide</a>
-      <a class="vbtn" style="background:var(--pu)" href="https://www.youtube.com/results?search_query=running+form+tips+improve+speed+technique" target="_blank">▶ Running Form Tips</a>
-      <a class="vbtn" style="background:var(--navy)" href="https://www.youtube.com/results?search_query=breathing+technique+running+nose+mouth+improve" target="_blank">▶ Breathing for Running</a>
-    </div>
   </div>
 </div>
 
 <!-- ═══ PROGRESS ═══ -->
 <div class="sec" id="sec-prog">
   <div class="g2" style="margin-bottom:14px">
-    <div class="card">
-      <div class="ctitle">📊 Weight Progress</div>
-      <div class="ch-wrap"><canvas id="chart-weight"></canvas></div>
-    </div>
-    <div class="card">
-      <div class="ctitle">📊 5K Time Progress</div>
-      <div class="ch-wrap"><canvas id="chart-5k"></canvas></div>
-    </div>
+    <div class="card"><div class="ctitle">📊 Weight &amp; Composition</div><div class="ch-wrap"><canvas id="chart-weight"></canvas></div></div>
+    <div class="card"><div class="ctitle">📊 5K Progress</div><div class="ch-wrap"><canvas id="chart-5k"></canvas></div></div>
   </div>
   <div class="card">
-    <div class="ctitle">📋 Monthly InBody Log — Add New Entry</div>
+    <div class="ctitle">➕ Add InBody Entry</div>
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:10px">
       <div class="field-group"><label class="field-label">Date</label><input class="field-input" id="ib-date" type="date"></div>
       <div class="field-group"><label class="field-label">Weight (kg)</label><input class="field-input" id="ib-wt" type="number" step="0.1" placeholder="78.7"></div>
       <div class="field-group"><label class="field-label">Body Fat %</label><input class="field-input" id="ib-bf" type="number" step="0.1" placeholder="19.9"></div>
-      <div class="field-group"><label class="field-label">Muscle Mass (kg)</label><input class="field-input" id="ib-sm" type="number" step="0.1" placeholder="35.8"></div>
+      <div class="field-group"><label class="field-label">Muscle (kg)</label><input class="field-input" id="ib-sm" type="number" step="0.1" placeholder="35.8"></div>
     </div>
     <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:10px">
       <div class="field-group"><label class="field-label">Fat Mass (kg)</label><input class="field-input" id="ib-fat" type="number" step="0.1" placeholder="15.6"></div>
-      <div class="field-group"><label class="field-label">Visceral Fat Level</label><input class="field-input" id="ib-vis" type="number" placeholder="7"></div>
+      <div class="field-group"><label class="field-label">Visceral Level</label><input class="field-input" id="ib-vis" type="number" placeholder="7"></div>
       <div class="field-group"><label class="field-label">InBody Score</label><input class="field-input" id="ib-score" type="number" placeholder="79"></div>
       <div class="field-group"><label class="field-label">5K Time (mm:ss)</label><input class="field-input" id="ib-5k" type="text" placeholder="38:30"></div>
     </div>
-    <button class="btn btnn" onclick="addInBody()">➕ Add InBody Entry</button>
+    <button class="btn btnn" onclick="addInBody()">➕ Save Entry</button>
   </div>
-  <div class="card">
-    <div class="ctitle">📜 InBody History</div>
-    <div id="inbody-table"></div>
-  </div>
+  <div class="card"><div class="ctitle">📜 InBody History</div><div id="inbody-table"></div></div>
 </div>
 
 </div><!-- /main -->
 
-<div class="toast" id="toast">✅ Saved!</div>
+<div class="toast" id="toast"></div>
 
+<!-- ═══════════════ JAVASCRIPT ═══════════════ -->
 <script>
-// ─── Data Model ───────────────────────────────────────────────────────────────
-const KEY = 'ahmed_fitness_v2';
-function loadData(){
-  try{
-    const d=JSON.parse(localStorage.getItem(KEY));
-    if(d) return d;
-  }catch(e){}
+// ── Config ──────────────────────────────────────────────────────────────────
+const GH_USER = 'aabdelbaqi';
+const GH_REPO = 'fitness-tracker';
+const GH_FILE = 'data.json';
+const TARGETS = { calories:2450, protein:160, carbs:270, fat:82 };
+
+// ── Keys ─────────────────────────────────────────────────────────────────────
+const getGemKey = () => localStorage.getItem('gem_key') || '';
+const getGHToken = () => localStorage.getItem('gh_token') || '';
+
+// ── Data Model ────────────────────────────────────────────────────────────────
+const DATA_KEY = 'ahmed_v4';
+function defaultData() {
   return {
-    profile:{weight:78.7,bf:19.9,muscle:35.8,time5k:'38:30'},
-    inbody:[{date:'2026-05-16',weight:78.7,bf:19.9,fat:15.6,muscle:35.8,visceral:7,score:79,time5k:'38:30'}],
-    cardio:{sun:[],tue:[],thu:[]},
-    workouts:{}
+    profile: { weight:78.7, bf:19.9, muscle:35.8, time5k:'38:30' },
+    inbody: [{ date:'2026-05-16', weight:78.7, bf:19.9, fat:15.6, muscle:35.8, visceral:7, score:79, time5k:'38:30' }],
+    cardio: { sun:[], tue:[], thu:[] },
+    workouts: {},
+    food: {}
   };
 }
-function saveData(d){
-  localStorage.setItem(KEY,JSON.stringify(d));
-  showToast();
+function loadLocal() {
+  try { const d = JSON.parse(localStorage.getItem(DATA_KEY)); if(d) return d; } catch(e){}
+  return defaultData();
 }
-let DATA=loadData();
+let DATA = loadLocal();
+let pendingFood = null;
+let currentFoodDate = todayStr();
 
-function showToast(){
-  const t=document.getElementById('toast');
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),2200);
+function todayStr() { return new Date().toISOString().split('T')[0]; }
+
+function saveLocal(d) { localStorage.setItem(DATA_KEY, JSON.stringify(d)); }
+
+// ── Toast ─────────────────────────────────────────────────────────────────────
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast show' + (type ? ' '+type : '');
+  setTimeout(() => t.classList.remove('show'), 2800);
 }
 
-// ─── Navigation ───────────────────────────────────────────────────────────────
-function goSec(id,btn){
-  document.querySelectorAll('.sec').forEach(s=>s.classList.remove('on'));
-  document.querySelectorAll('.nb').forEach(b=>b.classList.remove('on'));
-  document.getElementById('sec-'+id).classList.add('on');
+// ── Setup Modal ───────────────────────────────────────────────────────────────
+function showSetup() {
+  document.getElementById('setup-overlay').style.display = 'flex';
+  document.getElementById('setup-gem').value = getGemKey();
+  document.getElementById('setup-gh').value = getGHToken();
+}
+function hideSetup() { document.getElementById('setup-overlay').style.display = 'none'; }
+function saveSetup() {
+  const gem = document.getElementById('setup-gem').value.trim();
+  const gh  = document.getElementById('setup-gh').value.trim();
+  if(gem) localStorage.setItem('gem_key', gem);
+  if(gh)  localStorage.setItem('gh_token', gh);
+  hideSetup();
+  showToast('✅ Settings saved!', 'ok');
+  setSyncStatus('ok');
+}
+function skipSetup() { hideSetup(); showToast('Running in local-only mode'); }
+
+// ── Navigation ────────────────────────────────────────────────────────────────
+function goSec(id, btn) {
+  document.querySelectorAll('.sec').forEach(s => s.classList.remove('on'));
+  document.querySelectorAll('.nb').forEach(b => b.classList.remove('on'));
+  const sec = document.getElementById('sec-'+id);
+  if(sec) sec.classList.add('on');
   if(btn) btn.classList.add('on');
-  if(id==='prog') setTimeout(renderCharts,100);
-  if(id==='week') renderWeek();
+  else {
+    document.querySelectorAll('.nb').forEach(b => {
+      if(b.getAttribute('onclick') && b.getAttribute('onclick').includes("'"+id+"'")) b.classList.add('on');
+    });
+  }
+  if(id === 'prog') setTimeout(renderCharts, 100);
+  if(id === 'week') renderWeek();
+  if(id === 'food') renderFoodSection();
+  if(id === 'dash') renderDashCalSummary();
 }
 
-// ─── Exercise Data ─────────────────────────────────────────────────────────────
-const PUSH=[
-  {name:'Barbell Bench Press',sets:4,reps:'6–8',rest:'90s',rpe:'7–8',
-   cue:'<strong>Setup:</strong> Retract shoulder blades into bench, slight arch, feet flat. <strong>Descent:</strong> Lower bar to lower chest, elbows ~45–75°. <strong>Drive:</strong> Push bar back and slightly back over eyes. Breathe: inhale on the way down, exhale on push.',
-   video:'https://www.youtube.com/results?search_query=barbell+bench+press+proper+form+jeff+nippard+tutorial',
-   note:'Primary chest builder. Add 2.5kg when you complete all 4 sets with clean form.'},
-  {name:'Incline Dumbbell Press',sets:3,reps:'8–10',rest:'75s',rpe:'7',
-   cue:'<strong>Angle:</strong> Set bench to 30–45°. <strong>Start:</strong> Dumbbells at shoulder level, slight wrist tilt inward. <strong>Press:</strong> Push up and slightly inward at top, don\'t fully lock elbows. Targets upper chest — key for a full chest appearance.',
-   video:'https://www.youtube.com/results?search_query=incline+dumbbell+press+form+upper+chest+tutorial',
-   note:'Develops upper chest mass. Keep elbows slightly tucked.'},
-  {name:'Seated Dumbbell Overhead Press',sets:3,reps:'8–10',rest:'90s',rpe:'7–8',
-   cue:'<strong>Brace:</strong> Core tight, back neutral — don\'t hyperextend lumbar. <strong>Start:</strong> Dumbbells at ear level, elbows at 90°. <strong>Press:</strong> Drive straight up. <strong>Control:</strong> 2-second eccentric on way down. Works anterior &amp; medial delts.',
-   video:'https://www.youtube.com/results?search_query=dumbbell+overhead+press+seated+proper+form+shoulder',
-   note:'Seated removes leg drive — pure shoulder strength.'},
-  {name:'Lateral Raises (Dumbbell)',sets:4,reps:'12–15',rest:'45s',rpe:'8',
-   cue:'<strong>Start:</strong> Slight elbow bend, dumbbells hanging at sides. <strong>Raise:</strong> Lead with elbows, raise to shoulder height — not higher. <strong>KEY:</strong> Lean forward very slightly (10°) to hit medial delt. <strong>Control:</strong> 3-second descent. Don\'t swing!',
-   video:'https://www.youtube.com/results?search_query=lateral+raises+proper+form+medial+delt+shoulder+width',
-   note:'Most important shoulder exercise for width. Go light and feel the burn.'},
-  {name:'Tricep Dips (Parallel Bars)',sets:3,reps:'8–12',rest:'60s',rpe:'7',
-   cue:'<strong>Setup:</strong> Lean slightly forward for more chest/tricep engagement. <strong>Descent:</strong> Lower until upper arm is parallel to floor. <strong>Drive:</strong> Press back up fully. Add weight with belt when 12 reps becomes easy. If no dip bars: use bench dips or cable pushdowns.',
-   video:'https://www.youtube.com/results?search_query=tricep+dips+parallel+bars+proper+form+tutorial',
-   note:'Compound tricep movement — builds mass quickly.'},
-  {name:'Cable Face Pulls (or Band)',sets:3,reps:'15',rest:'45s',rpe:'6',
-   cue:'<strong>Height:</strong> Set cable at upper chest / face height. <strong>Grip:</strong> Rope attachment, pronated grip. <strong>Pull:</strong> Drive elbows back and out, end with hands beside ears. Critical for rotator cuff health &amp; rear delt development. Never skip this.',
-   video:'https://www.youtube.com/results?search_query=cable+face+pulls+proper+form+rear+delt+rotator+cuff',
-   note:'Injury prevention + rear delt. Do this every Push session.'},
+// ── GitHub Sync ───────────────────────────────────────────────────────────────
+function setSyncStatus(state) {
+  const btn = document.getElementById('sync-btn');
+  if(state === 'syncing') btn.textContent = '🔄';
+  else if(state === 'ok')  btn.textContent = '☁️ ✓';
+  else if(state === 'err') btn.textContent = '⚠️';
+  else btn.textContent = '☁️';
+}
+
+async function loadFromGitHub() {
+  const token = getGHToken();
+  if(!token) return null;
+  try {
+    setSyncStatus('syncing');
+    const res = await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${GH_FILE}`, {
+      headers: { 'Authorization': `token ${token}`, 'Accept': 'application/vnd.github.v3+json' }
+    });
+    if(!res.ok) { setSyncStatus('err'); return null; }
+    const json = await res.json();
+    const content = decodeURIComponent(escape(atob(json.content.replace(/\n/g,''))));
+    setSyncStatus('ok');
+    return { data: JSON.parse(content), sha: json.sha };
+  } catch(e) { setSyncStatus('err'); return null; }
+}
+
+async function syncToGitHub(data) {
+  const token = getGHToken();
+  if(!token) return false;
+  try {
+    setSyncStatus('syncing');
+    // Get current SHA
+    let sha = null;
+    const getRes = await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${GH_FILE}`, {
+      headers: { 'Authorization': `token ${token}` }
+    });
+    if(getRes.ok) { const ex = await getRes.json(); sha = ex.sha; }
+
+    const content = btoa(unescape(encodeURIComponent(JSON.stringify(data, null, 2))));
+    const body = { message: `Fitness update ${new Date().toISOString().slice(0,16)}`, content };
+    if(sha) body.sha = sha;
+
+    const putRes = await fetch(`https://api.github.com/repos/${GH_USER}/${GH_REPO}/contents/${GH_FILE}`, {
+      method: 'PUT',
+      headers: { 'Authorization': `token ${token}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(body)
+    });
+    if(putRes.ok) { setSyncStatus('ok'); return true; }
+    setSyncStatus('err'); return false;
+  } catch(e) { setSyncStatus('err'); return false; }
+}
+
+async function manualSync() {
+  const ok = await syncToGitHub(DATA);
+  showToast(ok ? '☁️ Synced to GitHub!' : '⚠️ Sync failed — check token', ok ? 'ok' : 'err');
+}
+
+// ── Save (local + auto-sync important data) ──────────────────────────────────
+async function saveData(autoSync = false) {
+  saveLocal(DATA);
+  updateHeader();
+  if(autoSync) syncToGitHub(DATA);
+}
+
+// ── Exercises ─────────────────────────────────────────────────────────────────
+const PUSH = [
+  { name:'Barbell Bench Press', sets:4, reps:'6–8', rest:'90s', rpe:'7–8',
+    cue:'<strong>Setup:</strong> Retract shoulder blades, slight arch, feet flat. <strong>Lower:</strong> Bar to lower chest, elbows 45–75°. <strong>Drive:</strong> Push back and slightly toward eyes. Inhale down, exhale on push.',
+    video:'https://www.youtube.com/results?search_query=barbell+bench+press+proper+form+tutorial' },
+  { name:'Incline Dumbbell Press', sets:3, reps:'8–10', rest:'75s', rpe:'7',
+    cue:'<strong>Angle:</strong> 30–45°. <strong>Press:</strong> Push up and slightly inward, don\'t fully lock elbows. Targets upper chest — key for full chest appearance.',
+    video:'https://www.youtube.com/results?search_query=incline+dumbbell+press+upper+chest+form' },
+  { name:'Seated DB Overhead Press', sets:3, reps:'8–10', rest:'90s', rpe:'7–8',
+    cue:'<strong>Brace:</strong> Core tight, no lumbar hyperextension. <strong>Press:</strong> Drive straight up. <strong>Control:</strong> 2-second eccentric on the way down.',
+    video:'https://www.youtube.com/results?search_query=seated+dumbbell+overhead+press+form' },
+  { name:'Lateral Raises', sets:4, reps:'12–15', rest:'45s', rpe:'8',
+    cue:'<strong>Lead with elbows</strong> to shoulder height. Lean forward 10° to hit medial delt. <strong>Control:</strong> 3-second descent. Do NOT swing.',
+    video:'https://www.youtube.com/results?search_query=lateral+raises+proper+form+medial+delt' },
+  { name:'Tricep Dips / Pushdowns', sets:3, reps:'8–12', rest:'60s', rpe:'7',
+    cue:'<strong>Lean forward</strong> slightly for more chest/tricep engagement. Lower until upper arm parallel to floor. Add weight with belt when 12 reps is easy.',
+    video:'https://www.youtube.com/results?search_query=tricep+dips+parallel+bars+form' },
+  { name:'Cable Face Pulls', sets:3, reps:'15', rest:'45s', rpe:'6',
+    cue:'Cable at face height, rope attachment. <strong>Pull:</strong> Drive elbows back and out, end with hands beside ears. Critical for rotator cuff health. Never skip this.',
+    video:'https://www.youtube.com/results?search_query=cable+face+pulls+rear+delt+rotator+cuff' },
 ];
 
-const PULL=[
-  {name:'Pull-Ups (or Assisted Pull-Ups)',sets:4,reps:'Max (target 6–10)',rest:'90s',rpe:'8',
-   cue:'<strong>Start:</strong> Dead hang — full shoulder extension. <strong>Pull:</strong> Drive elbows toward hips, squeeze lats at top. Chin must clear the bar. <strong>Control:</strong> 3-second descent. If can\'t do 6: use assisted machine or band. Goal: add 1 rep per week.',
-   video:'https://www.youtube.com/results?search_query=pull+ups+proper+form+beginners+how+to+progress',
-   note:'King of back exercises. Track your max reps each week as a KPI.'},
-  {name:'Barbell Bent-Over Row',sets:4,reps:'6–8',rest:'90s',rpe:'7–8',
-   cue:'<strong>Hinge:</strong> Hip hinge to ~45°, back straight, chest proud. <strong>Grip:</strong> Overhand, shoulder-width. <strong>Pull:</strong> Drive elbows straight back, bar touches lower chest/upper abdomen. <strong>Control:</strong> 2-second eccentric. Builds back thickness.',
-   video:'https://www.youtube.com/results?search_query=barbell+bent+over+row+proper+form+back+thickness',
-   note:'Primary back thickness builder. Keep back flat throughout.'},
-  {name:'Single-Arm Dumbbell Row',sets:3,reps:'10–12 per side',rest:'60s',rpe:'7',
-   cue:'<strong>Brace:</strong> Knee and hand on bench. <strong>Hang:</strong> Full stretch at bottom, let shoulder blade protract. <strong>Pull:</strong> Drive elbow straight up and back past your hip. <strong>Squeeze:</strong> Hold 1 second at top. Builds lats and corrects imbalances.',
-   video:'https://www.youtube.com/results?search_query=single+arm+dumbbell+row+proper+form+lat+squeeze',
-   note:'Key for fixing left/right strength asymmetry.'},
-  {name:'Seated Cable Row (or DB Row)',sets:3,reps:'10–12',rest:'60s',rpe:'7',
-   cue:'<strong>Posture:</strong> Sit tall, slight forward lean at start. <strong>Pull:</strong> Drive elbows back, squeeze shoulder blades together at end. <strong>Stretch:</strong> Allow full stretch forward between reps — don\'t round lower back. Controls the scapulae.',
-   video:'https://www.youtube.com/results?search_query=seated+cable+row+proper+form+back+workout',
-   note:'Great for mid-back thickness and scapular retraction.'},
-  {name:'Barbell / EZ-Bar Curl',sets:3,reps:'8–10',rest:'60s',rpe:'7',
-   cue:'<strong>Stand:</strong> Feet shoulder-width, elbows pinned to sides — don\'t let them drift forward. <strong>Curl:</strong> Supinate wrists at top, squeeze bicep fully. <strong>Control:</strong> 3-second descent — the eccentric is where growth happens. No swinging.',
-   video:'https://www.youtube.com/results?search_query=barbell+bicep+curl+proper+form+no+swing+tips',
-   note:'Keep elbows fixed at sides — the moment they drift, the bicep stops working.'},
-  {name:'Hammer Curl (Dumbbell)',sets:3,reps:'10–12',rest:'45s',rpe:'7',
-   cue:'<strong>Grip:</strong> Neutral (thumbs up), dumbbells hanging. <strong>Curl:</strong> Keep thumbs pointing up throughout — no rotation. <strong>Targets:</strong> Brachialis (under the bicep) which pushes the bicep up and makes the arm look bigger. Great arm size builder.',
-   video:'https://www.youtube.com/results?search_query=hammer+curl+proper+form+brachialis+arm+size',
-   note:'Builds arm thickness. Neutral grip protects wrist and elbows.'},
+const PULL = [
+  { name:'Pull-Ups (or Assisted)', sets:4, reps:'Max (target 6–10)', rest:'90s', rpe:'8',
+    cue:'<strong>Dead hang start</strong> — full shoulder extension. Drive elbows to hips. Chin clears bar. <strong>3-second descent.</strong> Goal: +1 rep per week.',
+    video:'https://www.youtube.com/results?search_query=pull+ups+proper+form+beginners+progress' },
+  { name:'Barbell Bent-Over Row', sets:4, reps:'6–8', rest:'90s', rpe:'7–8',
+    cue:'<strong>Hip hinge</strong> to ~45°, back flat, chest proud. Bar touches lower chest. <strong>2-second eccentric.</strong> Builds back thickness.',
+    video:'https://www.youtube.com/results?search_query=barbell+bent+over+row+proper+form' },
+  { name:'Single-Arm DB Row', sets:3, reps:'10–12 /side', rest:'60s', rpe:'7',
+    cue:'Full stretch at bottom — let shoulder blade protract. <strong>Pull elbow straight back</strong> past hip. Hold 1s at top. Fixes left/right imbalance.',
+    video:'https://www.youtube.com/results?search_query=single+arm+dumbbell+row+lat+form' },
+  { name:'Seated Cable Row', sets:3, reps:'10–12', rest:'60s', rpe:'7',
+    cue:'Slight forward lean at start, pull elbows back, <strong>squeeze shoulder blades</strong> together at end. Full stretch forward between reps.',
+    video:'https://www.youtube.com/results?search_query=seated+cable+row+form+back' },
+  { name:'Barbell / EZ-Bar Curl', sets:3, reps:'8–10', rest:'60s', rpe:'7',
+    cue:'<strong>Elbows pinned to sides.</strong> Supinate wrists at top, squeeze bicep. <strong>3-second descent.</strong> No swinging — ever.',
+    video:'https://www.youtube.com/results?search_query=barbell+bicep+curl+proper+form+no+swing' },
+  { name:'Hammer Curl', sets:3, reps:'10–12', rest:'45s', rpe:'7',
+    cue:'Neutral grip (thumbs up) throughout. Targets brachialis — pushes the bicep up and makes arm look thicker. Great for arm size.',
+    video:'https://www.youtube.com/results?search_query=hammer+curl+form+brachialis+arm+size' },
 ];
 
-const LEGS=[
-  {name:'Barbell Back Squat',sets:4,reps:'5–7',rest:'120s',rpe:'8',
-   cue:'<strong>Brace:</strong> Big breath, brace core 360°. <strong>Descent:</strong> Break at hips and knees simultaneously, go below parallel (thighs below floor). <strong>Drive:</strong> Push floor away, knees tracking over toes. <strong>Never:</strong> Cave knees inward. Most important leg exercise.',
-   video:'https://www.youtube.com/results?search_query=barbell+back+squat+proper+form+below+parallel+tutorial',
-   note:'The single best exercise for muscle and fat loss. Focus on form first.'},
-  {name:'Romanian Deadlift (RDL)',sets:4,reps:'6–8',rest:'90s',rpe:'7–8',
-   cue:'<strong>Setup:</strong> Bar at hip height, slight knee bend. <strong>Hinge:</strong> Push hips back (not down), feel stretch in hamstrings. <strong>Lower:</strong> Bar traces down thighs — keep it close. <strong>Drive:</strong> Push hips forward to stand. Your BEST exercise for hamstrings and glutes.',
-   video:'https://www.youtube.com/results?search_query=romanian+deadlift+proper+form+hamstring+hip+hinge',
-   note:'Focus on feeling the hamstring stretch — not how much weight you lift.'},
-  {name:'Leg Press (Machine)',sets:3,reps:'10–12',rest:'75s',rpe:'7',
-   cue:'<strong>Foot position:</strong> Shoulder-width, mid-platform. <strong>Range:</strong> Lower until knees near 90°, don\'t let lower back lift off. <strong>Drive:</strong> Push through heels, don\'t fully lock knees. Higher foot placement = more glutes/hamstrings. Lower = more quads.',
-   video:'https://www.youtube.com/results?search_query=leg+press+machine+proper+form+foot+placement+tutorial',
-   note:'Great volume accumulation for quads without spinal load.'},
-  {name:'Walking Lunges (Dumbbell)',sets:3,reps:'10 per leg',rest:'60s',rpe:'7',
-   cue:'<strong>Step:</strong> Long stride, front knee stays over ankle. <strong>Descent:</strong> Back knee nearly touches floor. <strong>Drive:</strong> Push through front heel to bring back foot forward. <strong>Posture:</strong> Torso upright throughout. Unilateral — fixes left/right imbalances.',
-   video:'https://www.youtube.com/results?search_query=walking+lunges+dumbbell+proper+form+tutorial+legs',
-   note:'Add dumbbells for load. Go slow and feel the quad and glute working.'},
-  {name:'Lying Leg Curl (Machine)',sets:3,reps:'10–12',rest:'60s',rpe:'7',
-   cue:'<strong>Pad:</strong> Sits just above ankles. <strong>Curl:</strong> Drive heels toward glutes. <strong>Key:</strong> Slow 3-second eccentric (lowering phase) — most hamstring tears happen here. Don\'t let hips lift. For max stretch, point toes away on the way up.',
-   video:'https://www.youtube.com/results?search_query=lying+leg+curl+machine+form+hamstring+eccentric',
-   note:'Slow eccentrics here are key to hamstring development and injury prevention.'},
-  {name:'Standing Calf Raise',sets:4,reps:'15–20',rest:'45s',rpe:'7',
-   cue:'<strong>Position:</strong> Ball of foot on edge of step for full range. <strong>Lower:</strong> Full stretch at bottom, hold 1s. <strong>Rise:</strong> Press up as high as possible, hold 1s at top. Calves need high reps and full ROM. If no step: flat floor works too.',
-   video:'https://www.youtube.com/results?search_query=standing+calf+raise+full+range+of+motion+proper+form',
-   note:'Full ROM essential — never do partial reps. 15-20 reps, feel the burn.'},
-  {name:'Plank / Dead Bug (Core Finisher)',sets:3,reps:'45 seconds',rest:'30s',rpe:'6',
-   cue:'<strong>Plank:</strong> Elbows under shoulders, body in straight line, squeeze glutes and abs simultaneously. <strong>Dead Bug alt:</strong> Lie on back, arms up, knees 90°. Extend opposite arm+leg slowly, keep lower back pressed to floor. Core stability = better performance on ALL lifts.',
-   video:'https://www.youtube.com/results?search_query=dead+bug+exercise+core+anti+rotation+proper+form',
-   note:'End every leg session with this. Core stability = injury prevention.'},
+const LEGS = [
+  { name:'Barbell Back Squat', sets:4, reps:'5–7', rest:'120s', rpe:'8',
+    cue:'<strong>Big breath + brace.</strong> Break hips and knees simultaneously, go below parallel. Knees track over toes — never cave inward.',
+    video:'https://www.youtube.com/results?search_query=barbell+back+squat+form+below+parallel' },
+  { name:'Romanian Deadlift (RDL)', sets:4, reps:'6–8', rest:'90s', rpe:'7–8',
+    cue:'<strong>Push hips back</strong> (not down). Bar traces down thighs — keep it close. Feel the hamstring stretch. Drive hips forward to stand.',
+    video:'https://www.youtube.com/results?search_query=romanian+deadlift+hamstring+hip+hinge+form' },
+  { name:'Leg Press (Machine)', sets:3, reps:'10–12', rest:'75s', rpe:'7',
+    cue:'Shoulder-width, mid-platform. Lower to ~90°. <strong>Don\'t let lower back lift.</strong> Higher foot = more glutes. Lower foot = more quads.',
+    video:'https://www.youtube.com/results?search_query=leg+press+machine+form+foot+placement' },
+  { name:'Walking Lunges (DB)', sets:3, reps:'10 /leg', rest:'60s', rpe:'7',
+    cue:'Long stride, front knee over ankle. Back knee nearly touches floor. <strong>Push through front heel.</strong> Torso upright throughout.',
+    video:'https://www.youtube.com/results?search_query=walking+lunges+dumbbell+form+tutorial' },
+  { name:'Lying Leg Curl (Machine)', sets:3, reps:'10–12', rest:'60s', rpe:'7',
+    cue:'<strong>3-second eccentric (lowering phase)</strong> — most hamstring tears happen here. Don\'t let hips lift. Full ROM.',
+    video:'https://www.youtube.com/results?search_query=lying+leg+curl+machine+hamstring+form' },
+  { name:'Standing Calf Raise', sets:4, reps:'15–20', rest:'45s', rpe:'7',
+    cue:'Ball of foot on step edge for <strong>full range.</strong> Full stretch at bottom (hold 1s), full rise at top (hold 1s). Partial reps don\'t work for calves.',
+    video:'https://www.youtube.com/results?search_query=standing+calf+raise+full+range+form' },
+  { name:'Plank / Dead Bug (Core)', sets:3, reps:'45 seconds', rest:'30s', rpe:'6',
+    cue:'Plank: body straight line, <strong>squeeze glutes + abs simultaneously.</strong> Dead Bug: extend opposite arm+leg, lower back pressed to floor throughout.',
+    video:'https://www.youtube.com/results?search_query=dead+bug+exercise+core+anti+rotation' },
 ];
 
-// ─── Render Exercises ──────────────────────────────────────────────────────────
-function renderExercises(list, containerId, dayKey){
-  const container=document.getElementById(containerId);
-  container.innerHTML='';
-  list.forEach((ex,i)=>{
-    const today=new Date().toISOString().split('T')[0];
-    const wKey=dayKey+'_'+today;
-    const saved=(DATA.workouts[wKey]||{})[i]||[];
-    const sets=[];
-    for(let s=0;s<ex.sets;s++){
-      const sv=saved[s]||{};
-      sets.push(`
-        <div class="log-row">
-          <div class="snum">${s+1}</div>
-          <input class="li" placeholder="kg" type="number" step="0.5" id="${dayKey}_${i}_${s}_w" value="${sv.w||''}" oninput="saveSet('${dayKey}',${i},${s})">
-          <input class="li" placeholder="reps" type="number" id="${dayKey}_${i}_${s}_r" value="${sv.r||''}" oninput="saveSet('${dayKey}',${i},${s})">
-          <input class="li" placeholder="notes" type="text" id="${dayKey}_${i}_${s}_n" value="${sv.n||''}">
-          <div class="lchk${sv.done?' dn':''}" onclick="toggleSet(this,'${dayKey}',${i},${s})">${sv.done?'✓':''}</div>
-        </div>`);
-    }
-    container.innerHTML+=`
-      <div class="exc">
-        <div class="exh" onclick="toggleEx(this)">
-          <div>
-            <div class="exn">${i+1}. ${ex.name}</div>
-            <div class="exm">
-              <span class="bdg bs">${ex.sets} Sets</span>
-              <span class="bdg br">${ex.reps} Reps</span>
-              <span class="bdg brt">Rest ${ex.rest}</span>
-              <span class="bdg brpe">RPE ${ex.rpe}</span>
-            </div>
-          </div>
-          <div class="exarr">▼</div>
-        </div>
-        <div class="exb">
-          <div class="excue"><strong>Form Cues:</strong> ${ex.cue}${ex.note?'<br><br><strong>Note:</strong> '+ex.note:''}</div>
-          <a class="vbtn" href="${ex.video}" target="_blank">▶ Watch Tutorial</a>
-          <div class="log-area">
-            <div class="log-hdr"><span>#</span><span>Weight</span><span>Reps</span><span>Notes</span><span>✓</span></div>
-            ${sets.join('')}
-          </div>
-        </div>
+// ── Render Exercises ──────────────────────────────────────────────────────────
+function renderExercises(list, containerId, dayKey) {
+  const container = document.getElementById(containerId);
+  if(!container) return;
+  container.innerHTML = '';
+  const today = todayStr();
+  const wKey = dayKey+'_'+today;
+  list.forEach((ex, i) => {
+    const saved = (DATA.workouts[wKey]||{})[i]||[];
+    let setRows = '';
+    for(let s = 0; s < ex.sets; s++) {
+      const sv = saved[s]||{};
+      setRows += `<div class="log-row">
+        <div class="snum">${s+1}</div>
+        <input class="li" placeholder="kg" type="number" step="0.5" id="${dayKey}_${i}_${s}_w" value="${sv.w||''}" oninput="saveSet('${dayKey}',${i},${s})">
+        <input class="li" placeholder="reps" type="number" id="${dayKey}_${i}_${s}_r" value="${sv.r||''}" oninput="saveSet('${dayKey}',${i},${s})">
+        <input class="li" placeholder="note" type="text" id="${dayKey}_${i}_${s}_n" value="${sv.n||''}">
+        <div class="lchk${sv.done?' dn':''}" onclick="toggleSet(this,'${dayKey}',${i},${s})">${sv.done?'✓':''}</div>
       </div>`;
+    }
+    container.innerHTML += `<div class="exc">
+      <div class="exh" onclick="toggleEx(this)">
+        <div>
+          <div class="exn">${i+1}. ${ex.name}</div>
+          <div class="exm">
+            <span class="bdg bs">${ex.sets} Sets</span>
+            <span class="bdg br">${ex.reps} Reps</span>
+            <span class="bdg brt">Rest ${ex.rest}</span>
+            <span class="bdg brpe">RPE ${ex.rpe}</span>
+          </div>
+        </div>
+        <div class="exarr">▼</div>
+      </div>
+      <div class="exb">
+        <div class="excue"><strong>Form:</strong> ${ex.cue}</div>
+        <a class="vbtn" href="${ex.video}" target="_blank">▶ Watch Tutorial</a>
+        <div class="log-area">
+          <div class="log-hdr"><span>#</span><span>Weight</span><span>Reps</span><span>Notes</span><span>✓</span></div>
+          ${setRows}
+        </div>
+      </div>
+    </div>`;
   });
 }
 
-function toggleEx(el){
-  const b=el.nextElementSibling;
-  const arr=el.querySelector('.exarr');
+function toggleEx(el) {
+  const b = el.nextElementSibling;
   b.classList.toggle('on');
-  arr.classList.toggle('open');
+  el.querySelector('.exarr').classList.toggle('open');
 }
 
-function saveSet(dayKey,exIdx,setIdx){
-  const today=new Date().toISOString().split('T')[0];
-  const wKey=dayKey+'_'+today;
-  if(!DATA.workouts[wKey]) DATA.workouts[wKey]={};
-  if(!DATA.workouts[wKey][exIdx]) DATA.workouts[wKey][exIdx]=[];
-  const sv=DATA.workouts[wKey][exIdx][setIdx]||{};
-  sv.w=document.getElementById(`${dayKey}_${exIdx}_${setIdx}_w`)?.value||'';
-  sv.r=document.getElementById(`${dayKey}_${exIdx}_${setIdx}_r`)?.value||'';
-  sv.n=document.getElementById(`${dayKey}_${exIdx}_${setIdx}_n`)?.value||'';
-  DATA.workouts[wKey][exIdx][setIdx]=sv;
-  saveData(DATA);
+function saveSet(dayKey, exIdx, setIdx) {
+  const today = todayStr();
+  const wKey = dayKey+'_'+today;
+  if(!DATA.workouts[wKey]) DATA.workouts[wKey] = {};
+  if(!DATA.workouts[wKey][exIdx]) DATA.workouts[wKey][exIdx] = [];
+  const sv = DATA.workouts[wKey][exIdx][setIdx]||{};
+  sv.w = document.getElementById(`${dayKey}_${exIdx}_${setIdx}_w`)?.value||'';
+  sv.r = document.getElementById(`${dayKey}_${exIdx}_${setIdx}_r`)?.value||'';
+  sv.n = document.getElementById(`${dayKey}_${exIdx}_${setIdx}_n`)?.value||'';
+  DATA.workouts[wKey][exIdx][setIdx] = sv;
+  saveData(false);
 }
 
-function toggleSet(el,dayKey,exIdx,setIdx){
-  const today=new Date().toISOString().split('T')[0];
-  const wKey=dayKey+'_'+today;
-  if(!DATA.workouts[wKey]) DATA.workouts[wKey]={};
-  if(!DATA.workouts[wKey][exIdx]) DATA.workouts[wKey][exIdx]=[];
-  const sv=DATA.workouts[wKey][exIdx][setIdx]||{};
-  sv.done=!sv.done;
-  el.classList.toggle('dn',sv.done);
-  el.textContent=sv.done?'✓':'';
-  DATA.workouts[wKey][exIdx][setIdx]=sv;
-  saveData(DATA);
+function toggleSet(el, dayKey, exIdx, setIdx) {
+  const today = todayStr();
+  const wKey = dayKey+'_'+today;
+  if(!DATA.workouts[wKey]) DATA.workouts[wKey] = {};
+  if(!DATA.workouts[wKey][exIdx]) DATA.workouts[wKey][exIdx] = [];
+  const sv = DATA.workouts[wKey][exIdx][setIdx]||{};
+  sv.done = !sv.done;
+  el.classList.toggle('dn', sv.done);
+  el.textContent = sv.done ? '✓' : '';
+  DATA.workouts[wKey][exIdx][setIdx] = sv;
+  saveData(false);
 }
 
-// ─── Weekly View ───────────────────────────────────────────────────────────────
-const WEEK_DAYS=[
-  {day:'Sunday',color:'#059669',type:'🏃 Cardio',focus:'Base / Long Run',items:['50–60 min easy run','65–70% max HR','Pace: 7:30–8:30 /km','Fat oxidation + base'],sec:'csun'},
-  {day:'Monday',color:'#2563EB',type:'💪 Strength',focus:'Push — Chest / Shoulders',items:['Bench Press 4×6-8','Incline DB Press 3×8-10','OHP 3×8-10','Lateral Raises 4×12-15'],sec:'push'},
-  {day:'Tuesday',color:'#059669',type:'🏃 Cardio',focus:'Speed Intervals',items:['Phase 1: 4×800m','Pace: 6:30–6:45 /km','80–92% max HR','VO2 Max development'],sec:'ctue'},
-  {day:'Wednesday',color:'#7C3AED',type:'💪 Strength',focus:'Pull — Back / Biceps',items:['Pull-Ups 4×max','Bent-Over Row 4×6-8','Single-Arm Row 3×10','Curls 3×8-10'],sec:'pull'},
-  {day:'Thursday',color:'#059669',type:'🏃 Cardio',focus:'Tempo Run',items:['40–50 min total','75–85% max HR','Tempo: 6:50–7:15 /km','Lactate threshold'],sec:'cthu'},
-  {day:'Friday',color:'#D97706',type:'💪 Strength',focus:'Legs — Quads / Hams / Glutes',items:['Squat 4×5-7','RDL 4×6-8','Leg Press 3×10-12','Walking Lunges 3×10'],sec:'legs'},
+// ── Weekly View ───────────────────────────────────────────────────────────────
+const WEEK_DAYS = [
+  { day:'Sunday', color:'#059669', type:'🏃 Cardio', focus:'Base / Long Run', items:['50–60 min easy','65–70% HR','7:30–8:30 /km','Fat oxidation'], sec:'csun' },
+  { day:'Monday', color:'#2563EB', type:'💪 Strength', focus:'Push — Chest · Shoulders', items:['Bench Press 4×6-8','Incline Press 3×8-10','OHP 3×8-10','Laterals 4×12-15'], sec:'push' },
+  { day:'Tuesday', color:'#059669', type:'🏃 Cardio', focus:'Speed Intervals', items:['4–6 × 800m','6:30–6:45 /km','80–92% HR','VO2 Max'], sec:'ctue' },
+  { day:'Wednesday', color:'#7C3AED', type:'💪 Strength', focus:'Pull — Back · Biceps', items:['Pull-Ups 4×max','Row 4×6-8','Single-Arm Row 3×10','Curls 3×8-10'], sec:'pull' },
+  { day:'Thursday', color:'#059669', type:'🏃 Cardio', focus:'Tempo Run', items:['40–50 min total','75–85% HR','6:50–7:15 /km','Lactate threshold'], sec:'cthu' },
+  { day:'Friday', color:'#D97706', type:'💪 Strength', focus:'Legs — Quads · Hams', items:['Squat 4×5-7','RDL 4×6-8','Leg Press 3×10','Lunges 3×10'], sec:'legs' },
 ];
-function renderWeek(){
-  const today=new Date().getDay(); // 0=Sun, 1=Mon, etc.
-  const mapDay={0:0,1:1,2:2,3:3,4:4,5:5};
-  const grid=document.getElementById('week-grid');
-  grid.innerHTML=WEEK_DAYS.map((d,i)=>`
-    <div class="dc${mapDay[today]===i?' today':''}" onclick="goSec('${d.sec}',null)">
+
+function renderWeek() {
+  const todayDow = new Date().getDay();
+  const grid = document.getElementById('week-grid');
+  grid.innerHTML = WEEK_DAYS.map((d,i) => `
+    <div class="dc${todayDow===i?' today':''}" onclick="goSec('${d.sec}',null)">
       <div class="dch" style="background:${d.color}">
         <div class="dct">${d.day}</div>
         <div class="dcf">${d.focus}</div>
@@ -754,212 +900,439 @@ function renderWeek(){
     </div>`).join('');
 }
 
-// ─── Cardio Logging ───────────────────────────────────────────────────────────
-function logCardio(day){
-  const entry={};
-  if(day==='sun'){
-    entry.date=document.getElementById('sun-date').value||new Date().toISOString().split('T')[0];
+// ── Cardio Log ────────────────────────────────────────────────────────────────
+function logCardio(day) {
+  const entry = { type: day==='sun'?'Base Run':day==='tue'?'Intervals':'Tempo' };
+  if(day==='sun') {
+    entry.date=document.getElementById('sun-date').value||todayStr();
     entry.dist=document.getElementById('sun-dist').value;
     entry.time=document.getElementById('sun-time').value;
     entry.hr=document.getElementById('sun-hr').value;
     entry.feel=document.getElementById('sun-feel').value;
     entry.notes=document.getElementById('sun-notes').value;
-    entry.type='Base Run';
-  } else if(day==='tue'){
-    entry.date=document.getElementById('tue-date').value||new Date().toISOString().split('T')[0];
+  } else if(day==='tue') {
+    entry.date=document.getElementById('tue-date').value||todayStr();
     entry.reps=document.getElementById('tue-reps').value;
     entry.pace=document.getElementById('tue-pace').value;
     entry.time=document.getElementById('tue-time').value;
     entry.hr=document.getElementById('tue-hr').value;
     entry.feel=document.getElementById('tue-feel').value;
-    entry.type='Intervals';
   } else {
-    entry.date=document.getElementById('thu-date').value||new Date().toISOString().split('T')[0];
+    entry.date=document.getElementById('thu-date').value||todayStr();
     entry.dist=document.getElementById('thu-dist').value;
     entry.pace=document.getElementById('thu-pace').value;
     entry.time=document.getElementById('thu-time').value;
     entry.hr=document.getElementById('thu-hr').value;
     entry.feel=document.getElementById('thu-feel').value;
-    entry.type='Tempo';
   }
-  if(!DATA.cardio[day]) DATA.cardio[day]=[];
+  if(!DATA.cardio[day]) DATA.cardio[day] = [];
   DATA.cardio[day].unshift(entry);
-  saveData(DATA);
+  saveData(true);
   renderCardioLog(day);
+  showToast('✅ Run saved & synced!', 'ok');
 }
 
-function renderCardioLog(day){
-  const logs=DATA.cardio[day]||[];
-  if(!logs.length) return;
-  const el=document.getElementById(day+'-log-table');
-  if(!el) return;
-  const rows=logs.slice(0,8).map(e=>`<tr>
+function renderCardioLog(day) {
+  const logs = DATA.cardio[day]||[];
+  const el = document.getElementById(day+'-log-table');
+  if(!el||!logs.length) return;
+  const rows = logs.slice(0,8).map(e => `<tr>
     <td>${e.date||''}</td><td>${e.type||''}</td>
     <td>${e.dist||e.reps||'—'}</td>
     <td>${e.time||'—'} min</td>
     <td>${e.pace||'—'}</td>
     <td>${e.hr||'—'}</td>
     <td>${e.feel||'—'}/10</td>
-    <td>${e.notes||'—'}</td>
   </tr>`).join('');
-  el.innerHTML=`<table><tr><th>Date</th><th>Type</th><th>Dist/Reps</th><th>Time</th><th>Pace</th><th>HR</th><th>Feel</th><th>Notes</th></tr>${rows}</table>`;
+  el.innerHTML = `<table><tr><th>Date</th><th>Type</th><th>Dist/Reps</th><th>Time</th><th>Pace</th><th>HR</th><th>Feel</th></tr>${rows}</table>`;
 }
 
-// ─── InBody Progress ───────────────────────────────────────────────────────────
-function addInBody(){
-  const entry={
-    date:document.getElementById('ib-date').value||new Date().toISOString().split('T')[0],
-    weight:parseFloat(document.getElementById('ib-wt').value)||null,
-    bf:parseFloat(document.getElementById('ib-bf').value)||null,
-    fat:parseFloat(document.getElementById('ib-fat').value)||null,
-    muscle:parseFloat(document.getElementById('ib-sm').value)||null,
-    visceral:parseInt(document.getElementById('ib-vis').value)||null,
-    score:parseInt(document.getElementById('ib-score').value)||null,
-    time5k:document.getElementById('ib-5k').value||null,
+// ── Image Resize (mobile photos can be huge) ──────────────────────────────────
+function resizeImage(file) {
+  return new Promise(resolve => {
+    const reader = new FileReader();
+    reader.onload = e => {
+      const img = new Image();
+      img.onload = () => {
+        const MAX = 1024;
+        const ratio = Math.min(1, MAX/Math.max(img.width, img.height));
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width * ratio;
+        canvas.height = img.height * ratio;
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/jpeg', 0.85).split(',')[1]);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+// ── Gemini Food Analysis ──────────────────────────────────────────────────────
+async function analyzeFood(input, isImage=false) {
+  const key = getGemKey();
+  if(!key) { showSetup(); return null; }
+
+  const prompt = `You are a precise nutrition expert. ${isImage ? 'Analyze the food items visible in this image.' : `Analyze this food description: "${input}"`}
+Identify every food item, estimate realistic portion sizes, and calculate nutrition.
+Return ONLY valid JSON (no markdown, no explanation, no code blocks):
+{"meal_name":"brief meal name","foods":[{"name":"item name","portion":"e.g. 200g","calories":0,"protein":0,"carbs":0,"fat":0}],"totals":{"calories":0,"protein":0,"carbs":0,"fat":0}}`;
+
+  const parts = [{ text: prompt }];
+  if(isImage) parts.push({ inlineData: { mimeType:'image/jpeg', data:input } });
+
+  try {
+    const res = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${key}`,
+      { method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ contents:[{parts}], generationConfig:{temperature:0.1, maxOutputTokens:1024} }) }
+    );
+    if(!res.ok) { showToast('⚠️ Gemini error: '+res.status, 'err'); return null; }
+    const data = await res.json();
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const match = text.match(/\{[\s\S]*\}/);
+    if(!match) { showToast('⚠️ Could not parse response', 'err'); return null; }
+    return JSON.parse(match[0]);
+  } catch(e) {
+    showToast('⚠️ Analysis failed: '+e.message, 'err');
+    return null;
+  }
+}
+
+// ── Food Photo Handler ────────────────────────────────────────────────────────
+async function handleFoodPhoto(input) {
+  const file = input.files[0];
+  if(!file) return;
+  showLoading(true);
+  const b64 = await resizeImage(file);
+  const result = await analyzeFood(b64, true);
+  showLoading(false);
+  if(result) showFoodResult(result);
+  input.value = '';
+}
+
+function triggerCamera() {
+  if(!getGemKey()) { showSetup(); return; }
+  document.getElementById('food-cam').click();
+}
+
+// ── Text Food Analysis ────────────────────────────────────────────────────────
+function showTextInput()  { document.getElementById('food-text-box').style.display = 'block'; }
+function hideTextInput()  { document.getElementById('food-text-box').style.display = 'none'; document.getElementById('food-text-area').value = ''; }
+
+async function runTextAnalysis() {
+  const text = document.getElementById('food-text-area').value.trim();
+  if(!text) return;
+  if(!getGemKey()) { showSetup(); return; }
+  hideTextInput();
+  showLoading(true);
+  const result = await analyzeFood(text, false);
+  showLoading(false);
+  if(result) showFoodResult(result);
+}
+
+// ── Food Result Display ───────────────────────────────────────────────────────
+function showLoading(show) {
+  document.getElementById('food-loading').style.display = show ? 'block' : 'none';
+}
+
+function showFoodResult(result) {
+  pendingFood = result;
+  document.getElementById('food-result-title').textContent = '📊 ' + result.meal_name;
+  const items = result.foods.map(f => `• ${f.name} (${f.portion}) — ${f.calories} kcal, ${f.protein}g P`).join('<br>');
+  document.getElementById('food-result-items').innerHTML = items;
+  const t = result.totals;
+  document.getElementById('food-result-macros').innerHTML = `
+    <div class="macro-chip"><div class="mc-v">${Math.round(t.calories)}</div><div class="mc-l">kcal</div></div>
+    <div class="macro-chip"><div class="mc-v">${Math.round(t.protein)}g</div><div class="mc-l">Protein</div></div>
+    <div class="macro-chip"><div class="mc-v">${Math.round(t.carbs)}g</div><div class="mc-l">Carbs</div></div>
+    <div class="macro-chip"><div class="mc-v">${Math.round(t.fat)}g</div><div class="mc-l">Fat</div></div>`;
+  document.getElementById('food-result-box').style.display = 'block';
+}
+
+function discardFood() {
+  pendingFood = null;
+  document.getElementById('food-result-box').style.display = 'none';
+}
+
+function confirmFood() {
+  if(!pendingFood) return;
+  const date = currentFoodDate;
+  if(!DATA.food[date]) DATA.food[date] = [];
+  DATA.food[date].push({
+    id: Date.now(),
+    time: new Date().toLocaleTimeString('en-GB', {hour:'2-digit',minute:'2-digit'}),
+    ...pendingFood
+  });
+  discardFood();
+  saveData(true);
+  renderFoodSection();
+  showToast('✅ Meal logged!', 'ok');
+}
+
+// ── Food Section Render ───────────────────────────────────────────────────────
+function renderFoodSection() {
+  const date = currentFoodDate;
+  const today = todayStr();
+  const d = new Date(date+'T12:00:00');
+  const isToday = date === today;
+  document.getElementById('food-date-label').textContent = isToday ? 'Today' : date === getPrevDay(today) ? 'Yesterday' : d.toLocaleDateString('en-GB', {weekday:'long'});
+  document.getElementById('food-date-sub').textContent = d.toLocaleDateString('en-GB', {day:'numeric', month:'long', year:'numeric'});
+  updateMacroBars();
+  renderFoodEntries();
+}
+
+function getPrevDay(d) {
+  const dt = new Date(d+'T12:00:00');
+  dt.setDate(dt.getDate()-1);
+  return dt.toISOString().split('T')[0];
+}
+
+function changeDay(delta) {
+  const d = new Date(currentFoodDate+'T12:00:00');
+  d.setDate(d.getDate() + delta);
+  const newDate = d.toISOString().split('T')[0];
+  if(newDate > todayStr()) return; // can't go to future
+  currentFoodDate = newDate;
+  renderFoodSection();
+}
+
+function getDayTotals(date) {
+  const entries = DATA.food[date]||[];
+  return entries.reduce((acc, e) => {
+    acc.calories += Math.round(e.totals?.calories||0);
+    acc.protein  += Math.round(e.totals?.protein||0);
+    acc.carbs    += Math.round(e.totals?.carbs||0);
+    acc.fat      += Math.round(e.totals?.fat||0);
+    return acc;
+  }, { calories:0, protein:0, carbs:0, fat:0 });
+}
+
+function updateMacroBars() {
+  const t = getDayTotals(currentFoodDate);
+  const pct = v => Math.min(Math.round((v/TARGETS[Object.keys(TARGETS).find(k=>TARGETS[k]===TARGETS[k])]||1)*100), 110);
+  const calPct = Math.min(Math.round((t.calories/TARGETS.calories)*100), 100);
+  const remaining = TARGETS.calories - t.calories;
+
+  document.getElementById('fc-kcal').textContent = t.calories.toLocaleString();
+  document.getElementById('fc-prot').textContent = t.protein + 'g';
+  const remEl = document.getElementById('fc-remaining');
+  remEl.textContent = remaining >= 0 ? `${remaining.toLocaleString()} kcal remaining` : `${Math.abs(remaining)} kcal over target`;
+  remEl.style.color = remaining >= 0 ? 'var(--gr)' : 'var(--rd)';
+  document.getElementById('fc-cal-bar').style.width = calPct+'%';
+  document.getElementById('fc-cal-bar').style.background = calPct > 100 ? 'var(--rd)' : 'linear-gradient(90deg,var(--teal),var(--gr))';
+
+  const pPct = Math.min((t.protein/TARGETS.protein)*100, 100);
+  const cPct = Math.min((t.carbs/TARGETS.carbs)*100, 100);
+  const fPct = Math.min((t.fat/TARGETS.fat)*100, 100);
+  document.getElementById('mp-val').textContent = `${t.protein}/${TARGETS.protein}g`;
+  document.getElementById('mc-val').textContent = `${t.carbs}/${TARGETS.carbs}g`;
+  document.getElementById('mf-val').textContent = `${t.fat}/${TARGETS.fat}g`;
+  document.getElementById('mp-bar').style.width = pPct+'%';
+  document.getElementById('mc-bar').style.width = cPct+'%';
+  document.getElementById('mf-bar').style.width = fPct+'%';
+}
+
+function renderFoodEntries() {
+  const entries = DATA.food[currentFoodDate]||[];
+  const el = document.getElementById('food-entries');
+  if(!entries.length) {
+    el.innerHTML = `<div class="empty-state"><div class="es-icon">🍽️</div><div class="es-text">No meals logged yet.<br>Use 📸 Photo or ✏️ Type Food to add.</div></div>`;
+    return;
+  }
+  el.innerHTML = entries.map((e,i) => `
+    <div class="food-entry">
+      <div class="food-entry-header">
+        <div class="food-entry-name">${e.meal_name||'Meal'}</div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div class="food-entry-time">${e.time||''}</div>
+          <button class="del-btn" onclick="deleteFood('${currentFoodDate}',${i})">🗑</button>
+        </div>
+      </div>
+      <div class="food-item-list">${(e.foods||[]).map(f=>`• ${f.name} — ${f.portion}`).join('<br>')}</div>
+      <div class="food-macros">
+        <div class="macro-chip"><div class="mc-v">${Math.round(e.totals?.calories||0)}</div><div class="mc-l">kcal</div></div>
+        <div class="macro-chip"><div class="mc-v">${Math.round(e.totals?.protein||0)}g</div><div class="mc-l">Protein</div></div>
+        <div class="macro-chip"><div class="mc-v">${Math.round(e.totals?.carbs||0)}g</div><div class="mc-l">Carbs</div></div>
+        <div class="macro-chip"><div class="mc-v">${Math.round(e.totals?.fat||0)}g</div><div class="mc-l">Fat</div></div>
+      </div>
+    </div>`).join('');
+}
+
+function deleteFood(date, idx) {
+  if(!DATA.food[date]) return;
+  DATA.food[date].splice(idx, 1);
+  saveData(true);
+  renderFoodSection();
+  showToast('Meal removed');
+}
+
+// ── Dashboard Cal Summary ─────────────────────────────────────────────────────
+function renderDashCalSummary() {
+  const t = getDayTotals(todayStr());
+  const el = document.getElementById('dash-macro-summary');
+  if(t.calories === 0) {
+    el.innerHTML = `<div class="empty-state" style="padding:12px"><div class="es-text">No food logged today. <button class="btn btnt" style="padding:4px 10px;font-size:12px;margin-left:6px" onclick="goSec('food',null)">Log Food →</button></div></div>`;
+    return;
+  }
+  const calPct = Math.min((t.calories/TARGETS.calories)*100, 100);
+  el.innerHTML = `
+    <div style="display:flex;justify-content:space-between;font-size:13px;font-weight:700;color:var(--navy);margin-bottom:8px">
+      <span>${t.calories.toLocaleString()} kcal consumed</span>
+      <span style="color:${t.calories>TARGETS.calories?'var(--rd)':'var(--gr)'}">${(TARGETS.calories-t.calories) >= 0 ? (TARGETS.calories-t.calories)+' remaining' : (t.calories-TARGETS.calories)+' over'}</span>
+    </div>
+    <div class="cal-progress-bg" style="height:10px;margin-bottom:10px"><div style="height:10px;border-radius:20px;background:${calPct>100?'var(--rd)':'var(--teal)'};width:${calPct}%;transition:width .5s"></div></div>
+    <div class="g3" style="gap:8px">
+      <div style="font-size:12px"><span style="color:var(--gr);font-weight:700">${t.protein}g</span> <span style="color:var(--g4)">/ ${TARGETS.protein}g protein</span></div>
+      <div style="font-size:12px"><span style="color:var(--bl);font-weight:700">${t.carbs}g</span> <span style="color:var(--g4)">/ ${TARGETS.carbs}g carbs</span></div>
+      <div style="font-size:12px"><span style="color:var(--yl);font-weight:700">${t.fat}g</span> <span style="color:var(--g4)">/ ${TARGETS.fat}g fat</span></div>
+    </div>`;
+}
+
+// ── InBody Progress ───────────────────────────────────────────────────────────
+function addInBody() {
+  const entry = {
+    date:   document.getElementById('ib-date').value||todayStr(),
+    weight: parseFloat(document.getElementById('ib-wt').value)||null,
+    bf:     parseFloat(document.getElementById('ib-bf').value)||null,
+    fat:    parseFloat(document.getElementById('ib-fat').value)||null,
+    muscle: parseFloat(document.getElementById('ib-sm').value)||null,
+    visceral: parseInt(document.getElementById('ib-vis').value)||null,
+    score:  parseInt(document.getElementById('ib-score').value)||null,
+    time5k: document.getElementById('ib-5k').value||null,
   };
   DATA.inbody.push(entry);
-  DATA.inbody.sort((a,b)=>new Date(a.date)-new Date(b.date));
-  if(entry.weight) DATA.profile.weight=entry.weight;
-  if(entry.bf) DATA.profile.bf=entry.bf;
-  if(entry.muscle) DATA.profile.muscle=entry.muscle;
-  if(entry.time5k) DATA.profile.time5k=entry.time5k;
-  saveData(DATA);
+  DATA.inbody.sort((a,b) => new Date(a.date)-new Date(b.date));
+  if(entry.weight) DATA.profile.weight = entry.weight;
+  if(entry.bf)     DATA.profile.bf = entry.bf;
+  if(entry.muscle) DATA.profile.muscle = entry.muscle;
+  if(entry.time5k) DATA.profile.time5k = entry.time5k;
+  saveData(true);
   updateHeader();
   renderInBodyTable();
-  setTimeout(renderCharts,100);
+  setTimeout(renderCharts, 100);
+  showToast('✅ InBody entry saved & synced!', 'ok');
 }
 
-function renderInBodyTable(){
-  const el=document.getElementById('inbody-table');
+function renderInBodyTable() {
+  const el = document.getElementById('inbody-table');
   if(!el) return;
-  const rows=DATA.inbody.map(e=>`<tr>
-    <td>${e.date}</td>
-    <td><strong>${e.weight||'—'}</strong></td>
-    <td>${e.bf||'—'}%</td>
-    <td>${e.fat||'—'}</td>
+  const rows = DATA.inbody.map(e => `<tr>
+    <td>${e.date}</td><td><strong>${e.weight||'—'}</strong></td>
+    <td>${e.bf||'—'}%</td><td>${e.fat||'—'}</td>
     <td style="color:var(--gr);font-weight:600">${e.muscle||'—'}</td>
-    <td>${e.visceral||'—'}</td>
-    <td>${e.score||'—'}</td>
-    <td>${e.time5k||'—'}</td>
+    <td>${e.visceral||'—'}</td><td>${e.score||'—'}</td><td>${e.time5k||'—'}</td>
   </tr>`).join('');
-  el.innerHTML=`<table>
-    <tr><th>Date</th><th>Weight</th><th>BF%</th><th>Fat kg</th><th>Muscle kg</th><th>Visceral</th><th>Score</th><th>5K</th></tr>
-    ${rows}
-  </table>`;
+  el.innerHTML = `<table><tr><th>Date</th><th>Weight</th><th>BF%</th><th>Fat kg</th><th>Muscle</th><th>Visceral</th><th>Score</th><th>5K</th></tr>${rows}</table>`;
 }
 
-// ─── Charts ───────────────────────────────────────────────────────────────────
-let charts={};
-function renderCharts(){
-  const labels=DATA.inbody.map(e=>e.date);
-  const weights=DATA.inbody.map(e=>e.weight);
-  const muscles=DATA.inbody.map(e=>e.muscle);
-  const fats=DATA.inbody.map(e=>e.fat);
-  // Weight chart
-  if(charts.weight) charts.weight.destroy();
-  const wctx=document.getElementById('chart-weight').getContext('2d');
-  charts.weight=new Chart(wctx,{
+// ── Charts ────────────────────────────────────────────────────────────────────
+let charts = {};
+function renderCharts() {
+  const labels  = DATA.inbody.map(e => e.date);
+  const weights = DATA.inbody.map(e => e.weight);
+  const muscles = DATA.inbody.map(e => e.muscle);
+  const fats    = DATA.inbody.map(e => e.fat);
+  if(charts.w) charts.w.destroy();
+  charts.w = new Chart(document.getElementById('chart-weight').getContext('2d'), {
     type:'line',
-    data:{labels,datasets:[
-      {label:'Weight (kg)',data:weights,borderColor:'#1a2b4a',backgroundColor:'rgba(26,43,74,.1)',fill:true,tension:.4,pointRadius:4},
-      {label:'Muscle (kg)',data:muscles,borderColor:'#22c55e',backgroundColor:'rgba(34,197,94,.08)',fill:true,tension:.4,pointRadius:4},
-      {label:'Fat (kg)',data:fats,borderColor:'#ef4444',backgroundColor:'rgba(239,68,68,.08)',fill:true,tension:.4,pointRadius:4},
+    data:{ labels, datasets:[
+      { label:'Weight (kg)', data:weights, borderColor:'#1a2b4a', backgroundColor:'rgba(26,43,74,.1)', fill:true, tension:.4, pointRadius:4 },
+      { label:'Muscle (kg)', data:muscles, borderColor:'#22c55e', backgroundColor:'rgba(34,197,94,.08)', fill:true, tension:.4, pointRadius:4 },
+      { label:'Fat (kg)',    data:fats,    borderColor:'#ef4444', backgroundColor:'rgba(239,68,68,.08)', fill:true, tension:.4, pointRadius:4 },
     ]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11}}}},scales:{y:{beginAtZero:false}}}
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom',labels:{font:{size:11}}}}, scales:{y:{beginAtZero:false}} }
   });
-  // 5K time chart
-  const fiveks=DATA.inbody.filter(e=>e.time5k).map(e=>({x:e.date,y:parseTime5k(e.time5k)}));
-  if(charts.fivek) charts.fivek.destroy();
-  const fctx=document.getElementById('chart-5k').getContext('2d');
-  charts.fivek=new Chart(fctx,{
+  const fiveks = DATA.inbody.filter(e=>e.time5k).map(e=>({ x:e.date, y:parseTime(e.time5k) }));
+  if(charts.f) charts.f.destroy();
+  charts.f = new Chart(document.getElementById('chart-5k').getContext('2d'), {
     type:'line',
-    data:{
-      labels:fiveks.map(e=>e.x),
-      datasets:[
-        {label:'5K Time (min)',data:fiveks.map(e=>e.y),borderColor:'#00c7b2',backgroundColor:'rgba(0,199,178,.1)',fill:true,tension:.4,pointRadius:4},
-        {label:'Goal 1: 35 min',data:fiveks.map(()=>35),borderColor:'#f97316',borderDash:[5,5],pointRadius:0},
-        {label:'Goal 2: 30 min',data:fiveks.map(()=>30),borderColor:'#22c55e',borderDash:[5,5],pointRadius:0},
-      ]
-    },
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom',labels:{font:{size:11}}}},scales:{y:{reverse:true,title:{display:true,text:'Minutes (lower = better)'}}}}
+    data:{ labels:fiveks.map(e=>e.x), datasets:[
+      { label:'5K Time (min)', data:fiveks.map(e=>e.y), borderColor:'#00c7b2', backgroundColor:'rgba(0,199,178,.1)', fill:true, tension:.4, pointRadius:4 },
+      { label:'Goal 1: 35min', data:fiveks.map(()=>35), borderColor:'#f97316', borderDash:[5,5], pointRadius:0 },
+      { label:'Goal 2: 30min', data:fiveks.map(()=>30), borderColor:'#22c55e', borderDash:[5,5], pointRadius:0 },
+    ]},
+    options:{ responsive:true, maintainAspectRatio:false, plugins:{legend:{position:'bottom',labels:{font:{size:11}}}}, scales:{y:{reverse:true}} }
   });
 }
 
-function parseTime5k(t){
+function parseTime(t) {
   if(!t) return null;
-  const parts=t.split(':');
-  if(parts.length===2) return parseInt(parts[0])+parseInt(parts[1])/60;
-  return parseFloat(t);
+  const p = t.split(':');
+  return p.length===2 ? parseInt(p[0]) + parseInt(p[1])/60 : parseFloat(t);
 }
 
-// ─── Stats Update ─────────────────────────────────────────────────────────────
-function updateStats(){
-  const wt=document.getElementById('inp-wt').value;
-  const t5k=document.getElementById('inp-5k').value;
-  if(wt) DATA.profile.weight=parseFloat(wt);
-  if(t5k) DATA.profile.time5k=t5k;
-  saveData(DATA);
-  updateHeader();
+// ── Header Update ─────────────────────────────────────────────────────────────
+function updateHeader() {
+  document.getElementById('hdr-wt').textContent = DATA.profile.weight;
+  document.getElementById('hdr-bf').textContent = DATA.profile.bf+'%';
+  document.getElementById('hdr-5k').textContent = DATA.profile.time5k||'—';
+  document.getElementById('d-wt').textContent = DATA.profile.weight+' kg';
+  document.getElementById('d-bf').textContent = DATA.profile.bf+'%';
+  document.getElementById('d-sm').textContent = DATA.profile.muscle+' kg';
 }
 
-function updateHeader(){
-  document.getElementById('hdr-wt').textContent=DATA.profile.weight;
-  document.getElementById('hdr-bf').textContent=DATA.profile.bf+'%';
-  document.getElementById('hdr-sm').textContent=DATA.profile.muscle;
-  document.getElementById('hdr-5k').textContent=DATA.profile.time5k||'—';
-  document.getElementById('d-wt').textContent=DATA.profile.weight+' kg';
-  document.getElementById('d-bf').textContent=DATA.profile.bf+'%';
-  document.getElementById('d-sm').textContent=DATA.profile.muscle+' kg';
-}
-
-function update5K(){
-  const val=document.getElementById('vo2-5k-input').value.trim();
+// ── 5K Update ─────────────────────────────────────────────────────────────────
+function update5K() {
+  const val = document.getElementById('vo2-input').value.trim();
   if(!val) return;
-  DATA.profile.time5k=val;
-  document.getElementById('hdr-5k').textContent=val;
-  document.getElementById('vo2-5k-display').textContent=val;
-  // Estimate VO2max from 5K time
-  const mins=parseTime5k(val);
-  if(mins){
-    const vo2=Math.round(483/mins+3.5);
-    document.getElementById('vo2-display').textContent='~'+vo2;
-    const pct=Math.min(((vo2-20)/40)*100,100);
-    document.getElementById('vo2-bar').style.width=Math.max(pct,5)+'%';
-    let cat='Below Average';
-    if(vo2>=45) cat='Excellent';
-    else if(vo2>=40) cat='Above Average';
-    else if(vo2>=35) cat='Average';
-    document.querySelector('.vo2card div div:last-child div:nth-child(2)').textContent=`ml/kg/min — ${cat} for age 40`;
+  DATA.profile.time5k = val;
+  document.getElementById('vo2-5k').textContent = val;
+  document.getElementById('hdr-5k').textContent = val;
+  const mins = parseTime(val);
+  if(mins) {
+    const vo2 = Math.round(483/mins + 3.5);
+    document.getElementById('vo2-display').textContent = '~'+vo2;
+    document.getElementById('vo2-bar').style.width = Math.min(Math.max(((vo2-20)/40)*100, 5), 100)+'%';
+    let cat = 'Below Average';
+    if(vo2>=45) cat='Excellent'; else if(vo2>=40) cat='Above Average'; else if(vo2>=35) cat='Average';
+    document.getElementById('vo2-cat').textContent = `ml/kg/min — ${cat} for age 40`;
   }
-  saveData(DATA);
+  saveData(true);
 }
 
-// ─── Set today's date on log inputs ───────────────────────────────────────────
-function setTodayDates(){
-  const t=new Date().toISOString().split('T')[0];
-  ['sun-date','tue-date','thu-date','ib-date'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el) el.value=t;
+// ── Dates ─────────────────────────────────────────────────────────────────────
+function setTodayDates() {
+  const t = todayStr();
+  ['sun-date','tue-date','thu-date','ib-date'].forEach(id => {
+    const el = document.getElementById(id);
+    if(el) el.value = t;
   });
 }
 
-// ─── Init ─────────────────────────────────────────────────────────────────────
-(function init(){
+// ── Init ──────────────────────────────────────────────────────────────────────
+(async function init() {
   setTodayDates();
-  renderExercises(PUSH,'push-exercises','push');
-  renderExercises(PULL,'pull-exercises','pull');
-  renderExercises(LEGS,'legs-exercises','legs');
+
+  // Try loading from GitHub first
+  if(getGHToken()) {
+    const gh = await loadFromGitHub();
+    if(gh && gh.data) {
+      // Use GitHub data if it exists — it's the truth across devices
+      DATA = gh.data;
+      saveLocal(DATA);
+    }
+  }
+
+  // Show setup if no Gemini key
+  if(!getGemKey()) showSetup();
+
+  renderExercises(PUSH, 'push-exercises', 'push');
+  renderExercises(PULL, 'pull-exercises', 'pull');
+  renderExercises(LEGS, 'legs-exercises', 'legs');
   renderWeek();
   updateHeader();
   renderInBodyTable();
-  ['sun','tue','thu'].forEach(d=>renderCardioLog(d));
-  // set 5K VO2max initial display
-  const mins=parseTime5k(DATA.profile.time5k||'38:30');
-  if(mins){
-    const vo2=Math.round(483/mins+3.5);
-    document.getElementById('vo2-display').textContent='~'+vo2;
-    const pct=Math.min(((vo2-20)/40)*100,100);
-    document.getElementById('vo2-bar').style.width=Math.max(pct,5)+'%';
+  renderDashCalSummary();
+  ['sun','tue','thu'].forEach(d => renderCardioLog(d));
+
+  // Init VO2 display
+  const mins = parseTime(DATA.profile.time5k||'38:30');
+  if(mins) {
+    const vo2 = Math.round(483/mins + 3.5);
+    document.getElementById('vo2-display').textContent = '~'+vo2;
+    document.getElementById('vo2-bar').style.width = Math.min(Math.max(((vo2-20)/40)*100,5),100)+'%';
+    document.getElementById('vo2-5k').textContent = DATA.profile.time5k;
   }
 })();
 </script>
