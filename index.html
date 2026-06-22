@@ -1021,20 +1021,20 @@ function renderCardioLog(day) {
   el.innerHTML = `<table><tr><th>Date</th><th>Type</th><th>Dist/Reps</th><th>Time</th><th>Pace</th><th>HR</th><th>Feel</th></tr>${rows}</table>`;
 }
 
-// ── Image Resize (mobile photos can be huge) ──────────────────────────────────
+// ── Image Resize (smaller = fewer tokens = less rate-limiting) ────────────────
 function resizeImage(file) {
   return new Promise(resolve => {
     const reader = new FileReader();
     reader.onload = e => {
       const img = new Image();
       img.onload = () => {
-        const MAX = 1024;
+        const MAX = 768; // reduced from 1024 — enough for food ID, saves ~40% tokens
         const ratio = Math.min(1, MAX/Math.max(img.width, img.height));
         const canvas = document.createElement('canvas');
-        canvas.width = img.width * ratio;
-        canvas.height = img.height * ratio;
+        canvas.width = Math.round(img.width * ratio);
+        canvas.height = Math.round(img.height * ratio);
         canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-        resolve(canvas.toDataURL('image/jpeg', 0.85).split(',')[1]);
+        resolve(canvas.toDataURL('image/jpeg', 0.75).split(',')[1]); // 0.75 quality vs 0.85
       };
       img.src = e.target.result;
     };
@@ -1042,7 +1042,7 @@ function resizeImage(file) {
   });
 }
 
-// ── Gemini Food Analysis ──────────────────────────────────────────────────────
+// ── Gemini Food Analysis (with 429 retry) ────────────────────────────────────
 async function analyzeFood(input, isImage=false) {
   const key = getGemKey();
   if(!key) { showSetup(); return null; }
@@ -1054,23 +1054,38 @@ Return ONLY valid JSON (no markdown, no explanation, no code blocks):
 
   const parts = [{ text: prompt }];
   if(isImage) parts.push({ inlineData: { mimeType:'image/jpeg', data:input } });
+  const body = JSON.stringify({ contents:[{parts}], generationConfig:{temperature:0.1, maxOutputTokens:512} });
 
-  try {
-    const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,
-      { method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ contents:[{parts}], generationConfig:{temperature:0.1, maxOutputTokens:1024} }) }
-    );
-    if(!res.ok) { showToast('⚠️ Gemini error: '+res.status, 'err'); return null; }
-    const data = await res.json();
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-    const match = text.match(/\{[\s\S]*\}/);
-    if(!match) { showToast('⚠️ Could not parse response', 'err'); return null; }
-    return JSON.parse(match[0]);
-  } catch(e) {
-    showToast('⚠️ Analysis failed: '+e.message, 'err');
-    return null;
+  const MAX_RETRIES = 3;
+  for(let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
+    try {
+      const res = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,
+        { method:'POST', headers:{'Content-Type':'application/json'}, body }
+      );
+      if(res.status === 429) {
+        // Rate limited — wait and retry
+        const waitSec = attempt * 15; // 15s, 30s, 45s
+        showToast(`⏳ Rate limit hit — retrying in ${waitSec}s... (${attempt}/${MAX_RETRIES})`, 'err');
+        await new Promise(r => setTimeout(r, waitSec * 1000));
+        continue;
+      }
+      if(!res.ok) {
+        const errData = await res.json().catch(()=>({}));
+        showToast(`⚠️ Gemini error ${res.status}: ${errData?.error?.message||'unknown'}`, 'err');
+        return null;
+      }
+      const data = await res.json();
+      const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+      const match = text.match(/\{[\s\S]*\}/);
+      if(!match) { showToast('⚠️ Could not parse response', 'err'); return null; }
+      return JSON.parse(match[0]);
+    } catch(e) {
+      if(attempt === MAX_RETRIES) { showToast('⚠️ Analysis failed: '+e.message, 'err'); return null; }
+    }
   }
+  showToast('⚠️ Still rate limited. Wait 60s and try again.', 'err');
+  return null;
 }
 
 // ── Food Photo Handler ────────────────────────────────────────────────────────
