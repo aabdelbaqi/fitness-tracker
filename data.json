@@ -69,6 +69,27 @@
           "carbs": 7,
           "fat": 44
         }
+      },
+      {
+        "id": 1782130852210,
+        "time": "16:20",
+        "meal_name": "Banana (1 medium)",
+        "foods": [
+          {
+            "name": "Banana (1 medium)",
+            "portion": "1 serving",
+            "calories": 105,
+            "protein": 1,
+            "carbs": 27,
+            "fat": 0
+          }
+        ],
+        "totals": {
+          "calories": 105,
+          "protein": 1,
+          "carbs": 27,
+          "fat": 0
+        }
       }
     ]
   },
