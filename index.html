@@ -43,7 +43,21 @@ body{font-family:-apple-system,'Segoe UI',Arial,sans-serif;background:var(--g0);
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
 .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
-@media(max-width:600px){.g2,.g3,.g4{grid-template-columns:1fr 1fr}.g4{grid-template-columns:1fr 1fr}}
+.ib-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:10px}
+.stat-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px}
+@media(max-width:640px){
+  .g2{grid-template-columns:1fr}
+  .g3{grid-template-columns:1fr 1fr}
+  .g4{grid-template-columns:1fr 1fr}
+  .ib-grid{grid-template-columns:1fr 1fr}
+  .stat-grid{grid-template-columns:1fr 1fr}
+  .food-macros{grid-template-columns:1fr 1fr}
+  .hdr-stats{gap:8px}
+  .stat-p .v{font-size:13px}
+  .main{padding:10px 8px}
+  .card{padding:12px 10px}
+  .ch-wrap{height:180px}
+}
 /* ── Tiles ── */
 .tile{background:#fff;border-radius:10px;padding:14px;border-left:4px solid var(--teal);box-shadow:0 1px 3px rgba(0,0,0,.06)}
 .tile .v{font-size:22px;font-weight:700;color:var(--navy)}.tile .l{font-size:10px;color:var(--g4);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}.tile .ch{font-size:11px;margin-top:4px}
@@ -406,7 +420,7 @@ textarea.field-input{resize:vertical;min-height:80px;line-height:1.5}
   <div class="card">
     <div class="ctitle">🏃 Sunday — Base / Long Easy Run</div>
     <div class="info"><strong>Purpose:</strong> Aerobic base, fat oxidation, active recovery from Friday. Never push pace here — conversational effort throughout.</div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">
+    <div class="stat-grid">
       <div class="pt hi"><div class="pv">50–60</div><div class="pl">Duration (min)</div></div>
       <div class="pt"><div class="pv">65–70%</div><div class="pl">Max HR</div></div>
       <div class="pt"><div class="pv">117–126</div><div class="pl">BPM (age 40)</div></div>
@@ -441,7 +455,7 @@ textarea.field-input{resize:vertical;min-height:80px;line-height:1.5}
   <div class="card">
     <div class="ctitle">🏃 Tuesday — Speed Intervals (VO2 Max)</div>
     <div class="info"><strong>Purpose:</strong> Fastest route to improving 5K time &amp; VO2 max. These are meant to be uncomfortable — 80–92% max HR during work intervals.</div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">
+    <div class="stat-grid">
       <div class="pt hi"><div class="pv">35–45</div><div class="pl">Duration (min)</div></div>
       <div class="pt" style="border-color:var(--rd)"><div class="pv">80–92%</div><div class="pl">HR (intervals)</div></div>
       <div class="pt"><div class="pv">144–166</div><div class="pl">BPM target</div></div>
@@ -478,7 +492,7 @@ textarea.field-input{resize:vertical;min-height:80px;line-height:1.5}
   <div class="card">
     <div class="ctitle">🏃 Thursday — Tempo Run</div>
     <div class="info"><strong>Purpose:</strong> Raises your lactate threshold — the pace at which you "hit the wall." Should feel comfortably hard (7/10). Can say short sentences but not hold conversation.</div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px">
+    <div class="stat-grid">
       <div class="pt hi"><div class="pv">40–50</div><div class="pl">Duration (min)</div></div>
       <div class="pt"><div class="pv">75–85%</div><div class="pl">Max HR</div></div>
       <div class="pt"><div class="pv">135–153</div><div class="pl">BPM target</div></div>
@@ -567,13 +581,13 @@ textarea.field-input{resize:vertical;min-height:80px;line-height:1.5}
   </div>
   <div class="card">
     <div class="ctitle">➕ Add InBody Entry</div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:10px">
+    <div class="ib-grid">
       <div class="field-group"><label class="field-label">Date</label><input class="field-input" id="ib-date" type="date"></div>
       <div class="field-group"><label class="field-label">Weight (kg)</label><input class="field-input" id="ib-wt" type="number" step="0.1" placeholder="78.7"></div>
       <div class="field-group"><label class="field-label">Body Fat %</label><input class="field-input" id="ib-bf" type="number" step="0.1" placeholder="19.9"></div>
       <div class="field-group"><label class="field-label">Muscle (kg)</label><input class="field-input" id="ib-sm" type="number" step="0.1" placeholder="35.8"></div>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:10px">
+    <div class="ib-grid">
       <div class="field-group"><label class="field-label">Fat Mass (kg)</label><input class="field-input" id="ib-fat" type="number" step="0.1" placeholder="15.6"></div>
       <div class="field-group"><label class="field-label">Visceral Level</label><input class="field-input" id="ib-vis" type="number" placeholder="7"></div>
       <div class="field-group"><label class="field-label">InBody Score</label><input class="field-input" id="ib-score" type="number" placeholder="79"></div>
