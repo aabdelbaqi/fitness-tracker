@@ -23,76 +23,7 @@
     "thu": []
   },
   "workouts": {},
-  "food": {
-    "2026-06-22": [
-      {
-        "id": 1782130726875,
-        "time": "16:18",
-        "meal_name": "Banana (1 medium)",
-        "foods": [
-          {
-            "name": "Banana (1 medium)",
-            "portion": "1 serving",
-            "calories": 105,
-            "protein": 1,
-            "carbs": 27,
-            "fat": 0
-          }
-        ],
-        "totals": {
-          "calories": 105,
-          "protein": 1,
-          "carbs": 27,
-          "fat": 0
-        }
-      },
-      {
-        "id": 1782130735301,
-        "time": "16:18",
-        "meal_name": "Keto Zinger Chicken Wrap",
-        "foods": [
-          {
-            "name": "Keto saj bread",
-            "portion": "1 wrap",
-            "calories": 0,
-            "protein": 0,
-            "carbs": 0,
-            "fat": 0
-          },
-          {
-            "name": "Zinger chicken",
-            "portion": "1 serving",
-            "calories": 0,
-            "protein": 0,
-            "carbs": 0,
-            "fat": 0
-          },
-          {
-            "name": "Turkey slices",
-            "portion": "1 serving",
-            "calories": 0,
-            "protein": 0,
-            "carbs": 0,
-            "fat": 0
-          },
-          {
-            "name": "Special Zinger Sauce",
-            "portion": "1 serving",
-            "calories": 0,
-            "protein": 0,
-            "carbs": 0,
-            "fat": 0
-          }
-        ],
-        "totals": {
-          "calories": 720,
-          "protein": 74,
-          "carbs": 7,
-          "fat": 44
-        }
-      }
-    ]
-  },
+  "food": {},
   "phase": {
     "name": "hypertrophy",
     "startDate": "2026-06-22",
