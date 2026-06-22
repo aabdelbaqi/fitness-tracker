@@ -410,8 +410,8 @@ textarea.field-input{resize:vertical;min-height:80px;line-height:1.5}
   <div class="note"><strong>⚠️ Until July 2026:</strong> Attend F45. Focus on Hamstrings, Glutes &amp; Hip Hinge movements. <strong>Avoid squats &amp; lunges</strong> due to knee injury.</div>
   <div class="note" style="border-color:var(--or);background:#fff8f0"><strong>🦵 Knee Note:</strong> Squats and lunges removed. All exercises here are low-compression and knee-safe. Avoid full deep knee bend on Leg Press — stop at 90°.</div>
   <div class="card">
-    <div class="ctitle">💪 Friday — Legs | Hamstrings · Glutes · Quads · Calves</div>
-    <div class="info"><strong>Warm-up:</strong> 5 min bike (low resistance) + hip circles + lying glute bridges × 15. No jumping or deep knee flexion in warm-up.</div>
+    <div class="ctitle">💪 Friday — Legs + Abs | Hamstrings · Glutes · Calves · Core</div>
+    <div class="info"><strong>Warm-up:</strong> 5 min bike (low resistance) + hip circles + lying glute bridges × 15. No jumping or deep knee flexion.<br><strong>Structure:</strong> Legs first (exercises 1–5) then move straight into the Ab Circuit (exercises 6–10). Total ~60 min.</div>
     <div id="legs-exercises"></div>
   </div>
 </div>
@@ -796,6 +796,7 @@ const PULL = [
 ];
 
 const LEGS = [
+  // ── LEGS (Knee-safe) ──
   { name:'Technogym Leg Press', sets:4, reps:'10–12', rest:'90s', rpe:'7–8',
     cue:'<strong>Feet shoulder-width, mid-platform.</strong> Lower until ~90° knee bend — stop before hips tuck. Drive through heels. Higher foot placement = more glutes/hamstrings. <strong>No locking knees at top.</strong> Controlled on the way down.',
     video:'https://www.youtube.com/results?search_query=leg+press+machine+knee+injury+safe+form' },
@@ -811,9 +812,22 @@ const LEGS = [
   { name:'Standing Calf Raise', sets:4, reps:'15–20', rest:'45s', rpe:'7',
     cue:'Ball of foot on step edge for <strong>full range.</strong> Full stretch at bottom (hold 1s), full rise at top (hold 1s). Partial reps don\'t work for calves.',
     video:'https://www.youtube.com/results?search_query=standing+calf+raise+full+range+form' },
-  { name:'Plank / Dead Bug (Core)', sets:3, reps:'45 seconds', rest:'30s', rpe:'6',
-    cue:'Plank: body straight line, <strong>squeeze glutes + abs simultaneously.</strong> Dead Bug: extend opposite arm+leg, lower back pressed to floor throughout.',
-    video:'https://www.youtube.com/results?search_query=dead+bug+exercise+core+anti+rotation' },
+  // ── ABS / CORE CIRCUIT ──
+  { name:'Hanging Knee Raise', sets:3, reps:'12–15', rest:'45s', rpe:'7',
+    cue:'<strong>Dead hang, no swinging.</strong> Tuck knees to chest using lower abs — don\'t just lift with hip flexors. Slow 2-second descent. If bar not available, use captain\'s chair or flat bench.',
+    video:'https://www.youtube.com/results?search_query=hanging+knee+raise+lower+abs+form' },
+  { name:'Cable Crunch (Kneeling)', sets:3, reps:'15–20', rest:'45s', rpe:'7',
+    cue:'Kneel at cable, rope at forehead. <strong>Crunch elbows to knees</strong> — don\'t just bow at the hips. Hold 1s at the bottom. Breathe out fully on contraction. Best weighted ab exercise.',
+    video:'https://www.youtube.com/results?search_query=cable+crunch+kneeling+abs+form+tutorial' },
+  { name:'Bicycle Crunch', sets:3, reps:'20 /side', rest:'30s', rpe:'7',
+    cue:'Slow and controlled — <strong>not fast.</strong> Opposite elbow to knee, full rotation. Keep lower back pressed to floor. Each rep = one side. Hits both upper abs and obliques.',
+    video:'https://www.youtube.com/results?search_query=bicycle+crunch+obliques+abs+form' },
+  { name:'Plank Hold', sets:3, reps:'45–60 seconds', rest:'30s', rpe:'6',
+    cue:'Body in straight line from head to heels. <strong>Squeeze glutes + brace abs simultaneously.</strong> Don\'t let hips sag or pike. Works transverse abdominis — the deep corset muscle under belly fat.',
+    video:'https://www.youtube.com/results?search_query=plank+proper+form+core+transverse+abdominis' },
+  { name:'Ab Wheel Rollout (or Dead Bug)', sets:3, reps:'8–10', rest:'45s', rpe:'8',
+    cue:'<strong>Ab Wheel:</strong> From knees, roll forward keeping core braced. Pull back using abs — not lower back. Go only as far as you can without hips dropping. <strong>Dead Bug substitute:</strong> extend opposite arm+leg, lower back glued to floor.',
+    video:'https://www.youtube.com/results?search_query=ab+wheel+rollout+beginners+form+tutorial' },
 ];
 
 // ── Render Exercises ──────────────────────────────────────────────────────────
@@ -1311,13 +1325,21 @@ function loadInBodyCSV(input) {
 function renderInBodyTable() {
   const el = document.getElementById('inbody-table');
   if(!el) return;
+  const fmtDate = d => { const p=d.split('-'); return p[2]+'/'+p[1]+'/'+p[0].slice(2); }; // DD/MM/YY
   const rows = DATA.inbody.map(e => `<tr>
-    <td>${e.date}</td><td><strong>${e.weight||'—'}</strong></td>
-    <td>${e.bf||'—'}%</td><td>${e.fat||'—'}</td>
+    <td style="white-space:nowrap">${fmtDate(e.date)}</td>
+    <td><strong>${e.weight||'—'}</strong></td>
+    <td>${e.bf||'—'}%</td>
+    <td>${e.fat||'—'}</td>
     <td style="color:var(--gr);font-weight:600">${e.muscle||'—'}</td>
-    <td>${e.visceral||'—'}</td><td>${e.score||'—'}</td><td>${e.time5k||'—'}</td>
+    <td>${e.visceral||'—'}</td>
+    <td>${e.score||'—'}</td>
+    <td style="white-space:nowrap">${e.time5k||'—'}</td>
   </tr>`).join('');
-  el.innerHTML = `<table><tr><th>Date</th><th>Weight</th><th>BF%</th><th>Fat kg</th><th>Muscle</th><th>Visceral</th><th>Score</th><th>5K</th></tr>${rows}</table>`;
+  el.innerHTML = `<div style="overflow-x:auto;-webkit-overflow-scrolling:touch"><table style="min-width:480px;font-size:12px">
+    <tr><th>Date</th><th>Wt kg</th><th>BF%</th><th>Fat kg</th><th>Muscle</th><th>Visceral</th><th>Score</th><th>5K</th></tr>
+    ${rows}
+  </table></div>`;
 }
 
 // ── Charts ────────────────────────────────────────────────────────────────────
