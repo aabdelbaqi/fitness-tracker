@@ -344,10 +344,11 @@ textarea.field-input{resize:vertical;min-height:80px;line-height:1.5}
   </div>
 
   <!-- Add food buttons -->
-  <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+  <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
     <button class="big-btn btnt" onclick="triggerCamera()"><span class="icon">📸</span><span>Camera</span></button>
-    <button class="big-btn" style="flex:1;background:#4b5563;color:#fff;border:none;border-radius:12px;padding:14px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px" onclick="triggerGallery()"><span class="icon">🖼️</span><span>Gallery</span></button>
-    <button class="big-btn btnn" onclick="showTextInput()"><span class="icon">✏️</span><span>Type</span></button>
+    <button class="big-btn" style="flex:1;background:#4b5563;color:#fff;border:none;border-radius:12px;padding:14px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px" onclick="triggerGallery()"><span class="icon">🖼️</span><span>Gallery</span></button>
+    <button class="big-btn btnn" onclick="showTextInput()"><span class="icon">🤖</span><span>AI Type</span></button>
+    <button class="big-btn" style="flex:1;background:var(--em);color:#fff;border:none;border-radius:12px;padding:14px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px" onclick="showManualEntry()"><span class="icon">📝</span><span>Manual</span></button>
   </div>
   <!-- Camera: forces live camera capture -->
   <input type="file" accept="image/*" capture="environment" id="food-cam" style="display:none" onchange="handleFoodPhoto(this)">
@@ -361,6 +362,26 @@ textarea.field-input{resize:vertical;min-height:80px;line-height:1.5}
     <div style="display:flex;gap:8px;margin-top:10px">
       <button class="btn btnt" style="flex:1" onclick="runTextAnalysis()">🤖 Analyze</button>
       <button class="btn btn-ghost" style="flex:1" onclick="hideTextInput()">Cancel</button>
+    </div>
+  </div>
+
+  <!-- Manual Entry -->
+  <div id="food-manual-box" style="display:none" class="card">
+    <div class="ctitle">📝 Manual Entry</div>
+    <div style="margin-bottom:10px">
+      <input class="field-input" id="manual-search" placeholder="Search: chicken, rice, egg, salmon…" oninput="searchFood(this.value)" autocomplete="off">
+      <div id="food-suggestions" style="background:#fff;border:1px solid var(--g2);border-radius:8px;margin-top:4px;display:none;max-height:180px;overflow-y:auto"></div>
+    </div>
+    <div class="field-group" style="margin-bottom:8px"><label class="field-label">Meal / Food Name</label><input class="field-input" id="manual-name" placeholder="e.g. Grilled Chicken Breast"></div>
+    <div class="ib-grid" style="margin-bottom:10px">
+      <div class="field-group"><label class="field-label">Calories</label><input class="field-input" id="manual-cal" type="number" placeholder="350"></div>
+      <div class="field-group"><label class="field-label">Protein (g)</label><input class="field-input" id="manual-pro" type="number" placeholder="35"></div>
+      <div class="field-group"><label class="field-label">Carbs (g)</label><input class="field-input" id="manual-carb" type="number" placeholder="0"></div>
+      <div class="field-group"><label class="field-label">Fat (g)</label><input class="field-input" id="manual-fat" type="number" placeholder="8"></div>
+    </div>
+    <div style="display:flex;gap:8px">
+      <button class="btn btnt" style="flex:1" onclick="saveManualEntry()">✅ Add to Log</button>
+      <button class="btn btn-ghost" onclick="hideManualEntry()">Cancel</button>
     </div>
   </div>
 
@@ -1028,18 +1049,115 @@ function resizeImage(file) {
     reader.onload = e => {
       const img = new Image();
       img.onload = () => {
-        const MAX = 768; // reduced from 1024 — enough for food ID, saves ~40% tokens
+        const MAX = 512; // 512px is plenty for food identification, minimises tokens
         const ratio = Math.min(1, MAX/Math.max(img.width, img.height));
         const canvas = document.createElement('canvas');
         canvas.width = Math.round(img.width * ratio);
         canvas.height = Math.round(img.height * ratio);
         canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
-        resolve(canvas.toDataURL('image/jpeg', 0.75).split(',')[1]); // 0.75 quality vs 0.85
+        resolve(canvas.toDataURL('image/jpeg', 0.65).split(',')[1]);
       };
       img.src = e.target.result;
     };
     reader.readAsDataURL(file);
   });
+}
+
+// ── Built-in Food Database (no API needed) ───────────────────────────────────
+const FOOD_DB = [
+  // Proteins
+  {n:'Chicken Breast (100g)',        cal:165, pro:31, carb:0,  fat:4},
+  {n:'Chicken Thigh (100g)',         cal:209, pro:26, carb:0,  fat:11},
+  {n:'Grilled Salmon (100g)',        cal:208, pro:20, carb:0,  fat:13},
+  {n:'Tuna in Water (100g)',         cal:116, pro:26, carb:0,  fat:1},
+  {n:'Egg (1 whole)',                cal:78,  pro:6,  carb:1,  fat:5},
+  {n:'Egg White (1)',                cal:17,  pro:4,  carb:0,  fat:0},
+  {n:'Ground Beef 90% lean (100g)', cal:176, pro:20, carb:0,  fat:10},
+  {n:'Steak / Sirloin (100g)',       cal:207, pro:26, carb:0,  fat:11},
+  {n:'Shrimp (100g)',                cal:99,  pro:24, carb:0,  fat:0},
+  {n:'Greek Yogurt Plain (200g)',    cal:130, pro:22, carb:9,  fat:0},
+  {n:'Cottage Cheese (100g)',        cal:98,  pro:11, carb:3,  fat:4},
+  {n:'Whey Protein Shake (1 scoop)', cal:120, pro:25, carb:3,  fat:2},
+  // Carbs
+  {n:'White Rice cooked (100g)',     cal:130, pro:3,  carb:28, fat:0},
+  {n:'Brown Rice cooked (100g)',     cal:123, pro:3,  carb:26, fat:1},
+  {n:'Oats dry (50g)',               cal:188, pro:7,  carb:32, fat:4},
+  {n:'Whole Wheat Bread (1 slice)',  cal:80,  pro:4,  carb:15, fat:1},
+  {n:'Sweet Potato (100g)',          cal:86,  pro:2,  carb:20, fat:0},
+  {n:'Pasta cooked (100g)',          cal:158, pro:6,  carb:31, fat:1},
+  {n:'Banana (1 medium)',            cal:105, pro:1,  carb:27, fat:0},
+  {n:'Apple (1 medium)',             cal:95,  pro:0,  carb:25, fat:0},
+  {n:'Orange (1 medium)',            cal:62,  pro:1,  carb:15, fat:0},
+  // Fats
+  {n:'Avocado (½)',                  cal:120, pro:1,  carb:6,  fat:11},
+  {n:'Olive Oil (1 tbsp)',           cal:119, pro:0,  carb:0,  fat:14},
+  {n:'Almonds (30g)',                cal:173, pro:6,  carb:6,  fat:15},
+  {n:'Peanut Butter (2 tbsp)',       cal:188, pro:8,  carb:6,  fat:16},
+  // Vegetables
+  {n:'Broccoli (100g)',              cal:34,  pro:3,  carb:7,  fat:0},
+  {n:'Spinach (100g)',               cal:23,  pro:3,  carb:4,  fat:0},
+  {n:'Mixed Salad (100g)',           cal:15,  pro:1,  carb:3,  fat:0},
+  // Meals
+  {n:'Grilled Chicken + Rice plate', cal:480, pro:42, carb:50, fat:8},
+  {n:'Shawarma wrap (1)',            cal:550, pro:28, carb:52, fat:22},
+  {n:'Falafel wrap (1)',             cal:520, pro:18, carb:62, fat:22},
+  {n:'Burger (regular)',             cal:540, pro:28, carb:45, fat:26},
+  {n:'Pizza slice (1)',              cal:285, pro:12, carb:36, fat:10},
+  {n:'Caesar Salad (no croutons)',   cal:180, pro:6,  carb:8,  fat:14},
+  {n:'Hummus (100g)',                cal:166, pro:8,  carb:14, fat:10},
+  {n:'Protein Bar (average)',        cal:200, pro:20, carb:22, fat:7},
+];
+
+function searchFood(q) {
+  const box = document.getElementById('food-suggestions');
+  if(!q || q.length < 2) { box.style.display='none'; return; }
+  const results = FOOD_DB.filter(f => f.n.toLowerCase().includes(q.toLowerCase())).slice(0,8);
+  if(!results.length) { box.style.display='none'; return; }
+  box.style.display = 'block';
+  box.innerHTML = results.map(f =>
+    `<div onclick="fillFood(${JSON.stringify(f).replace(/"/g,'&quot;')})"
+      style="padding:10px 12px;cursor:pointer;border-bottom:1px solid var(--g1);font-size:13px"
+      onmouseover="this.style.background='#f0fdf4'" onmouseout="this.style.background=''"
+    ><strong>${f.n}</strong> <span style="color:var(--g4);font-size:11px">${f.cal} kcal · ${f.pro}g P · ${f.carb}g C · ${f.fat}g F</span></div>`
+  ).join('');
+}
+
+function fillFood(f) {
+  document.getElementById('manual-name').value  = f.n;
+  document.getElementById('manual-cal').value   = f.cal;
+  document.getElementById('manual-pro').value   = f.pro;
+  document.getElementById('manual-carb').value  = f.carb;
+  document.getElementById('manual-fat').value   = f.fat;
+  document.getElementById('food-suggestions').style.display = 'none';
+  document.getElementById('manual-search').value = '';
+}
+
+function showManualEntry() {
+  document.getElementById('food-manual-box').style.display = 'block';
+  document.getElementById('food-text-box').style.display   = 'none';
+  document.getElementById('manual-name').value = '';
+  ['manual-cal','manual-pro','manual-carb','manual-fat'].forEach(id => document.getElementById(id).value='');
+  setTimeout(() => document.getElementById('manual-search').focus(), 100);
+}
+function hideManualEntry() {
+  document.getElementById('food-manual-box').style.display = 'none';
+  document.getElementById('food-suggestions').style.display = 'none';
+}
+
+function saveManualEntry() {
+  const name = document.getElementById('manual-name').value.trim();
+  const cal  = parseFloat(document.getElementById('manual-cal').value)  || 0;
+  const pro  = parseFloat(document.getElementById('manual-pro').value)  || 0;
+  const carb = parseFloat(document.getElementById('manual-carb').value) || 0;
+  const fat  = parseFloat(document.getElementById('manual-fat').value)  || 0;
+  if(!name) { showToast('Enter a food name', 'err'); return; }
+  const result = {
+    meal_name: name,
+    foods: [{ name, portion:'1 serving', calories:cal, protein:pro, carbs:carb, fat }],
+    totals: { calories:cal, protein:pro, carbs:carb, fat }
+  };
+  hideManualEntry();
+  showFoodResult(result);
 }
 
 // ── Gemini Food Analysis (with 429 retry) ────────────────────────────────────
@@ -1056,35 +1174,40 @@ Return ONLY valid JSON (no markdown, no explanation, no code blocks):
   if(isImage) parts.push({ inlineData: { mimeType:'image/jpeg', data:input } });
   const body = JSON.stringify({ contents:[{parts}], generationConfig:{temperature:0.1, maxOutputTokens:512} });
 
-  const MAX_RETRIES = 3;
-  for(let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
-    try {
-      const res = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${key}`,
-        { method:'POST', headers:{'Content-Type':'application/json'}, body }
-      );
-      if(res.status === 429) {
-        // Rate limited — wait and retry
-        const waitSec = attempt * 15; // 15s, 30s, 45s
-        showToast(`⏳ Rate limit hit — retrying in ${waitSec}s... (${attempt}/${MAX_RETRIES})`, 'err');
-        await new Promise(r => setTimeout(r, waitSec * 1000));
-        continue;
-      }
-      if(!res.ok) {
-        const errData = await res.json().catch(()=>({}));
-        showToast(`⚠️ Gemini error ${res.status}: ${errData?.error?.message||'unknown'}`, 'err');
-        return null;
-      }
-      const data = await res.json();
-      const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
-      const match = text.match(/\{[\s\S]*\}/);
-      if(!match) { showToast('⚠️ Could not parse response', 'err'); return null; }
-      return JSON.parse(match[0]);
-    } catch(e) {
-      if(attempt === MAX_RETRIES) { showToast('⚠️ Analysis failed: '+e.message, 'err'); return null; }
+  // Try flash-lite first (30 RPM), fall back to flash (15 RPM)
+  const MODELS = ['gemini-2.0-flash-lite', 'gemini-2.0-flash'];
+  for(const model of MODELS) {
+    for(let attempt = 1; attempt <= 2; attempt++) {
+      try {
+        const res = await fetch(
+          `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${key}`,
+          { method:'POST', headers:{'Content-Type':'application/json'}, body }
+        );
+        if(res.status === 429) {
+          if(attempt === 1) {
+            showToast(`⏳ Rate limit — retrying in 8s...`, 'err');
+            await new Promise(r => setTimeout(r, 8000));
+            continue;
+          }
+          break; // try next model
+        }
+        if(!res.ok) {
+          const errData = await res.json().catch(()=>({}));
+          showToast(`⚠️ Gemini ${res.status}: ${errData?.error?.message||'unknown'}`, 'err');
+          return null;
+        }
+        const data = await res.json();
+        const text = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+        const match = text.match(/\{[\s\S]*\}/);
+        if(!match) { showToast('⚠️ Could not parse response', 'err'); return null; }
+        return JSON.parse(match[0]);
+      } catch(e) { /* network error, try next */ }
     }
   }
-  showToast('⚠️ Still rate limited. Wait 60s and try again.', 'err');
+  // All models rate-limited — prompt user to type instead
+  showToast('⚠️ API busy. Use ✏️ Type to log manually.', 'err');
+  showLoading(false);
+  showTextInput();
   return null;
 }
 
