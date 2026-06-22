@@ -62,6 +62,15 @@ body{font-family:-apple-system,'Segoe UI',Arial,sans-serif;background:var(--g0);
 .tile{background:#fff;border-radius:10px;padding:14px;border-left:4px solid var(--teal);box-shadow:0 1px 3px rgba(0,0,0,.06)}
 .tile .v{font-size:22px;font-weight:700;color:var(--navy)}.tile .l{font-size:10px;color:var(--g4);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}.tile .ch{font-size:11px;margin-top:4px}
 .cup{color:var(--gr)}.cdn{color:var(--rd)}
+.phase-banner{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:8px;margin-bottom:12px;font-size:13px;flex-wrap:wrap}
+.pb-hyp{background:#e0f2fe;color:#0369a1}.pb-str{background:#fef3c7;color:#92400e}.pb-del{background:#f3e8ff;color:#6d28d9}
+.phase-btn{border:none;padding:5px 11px;border-radius:20px;font-size:11px;font-weight:700;cursor:pointer;transition:all .2s;background:rgba(0,0,0,.1);color:inherit}
+.ph-active{background:var(--navy)!important;color:#fff!important}
+.alert-item{display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--g1)}.alert-item:last-child{border-bottom:none}
+.alert-icon{font-size:20px;flex-shrink:0;margin-top:2px}.alert-body{flex:1}
+.alert-title{font-weight:700;font-size:13px;color:var(--navy);margin-bottom:2px}
+.alert-msg{font-size:12px;color:var(--g6);line-height:1.5}
+.a-warn{color:var(--or)!important}.a-ok{color:var(--gr)!important}.a-info{color:var(--bl)!important}
 /* ── Exercise Cards ── */
 .exc{border:1px solid var(--g2);border-radius:10px;overflow:hidden;margin-bottom:10px;transition:box-shadow .2s}.exc:hover{box-shadow:0 3px 10px rgba(0,0,0,.1)}
 .exh{display:flex;align-items:flex-start;justify-content:space-between;padding:12px 14px;cursor:pointer;gap:10px}
@@ -239,6 +248,10 @@ textarea.field-input{resize:vertical;min-height:80px;line-height:1.5}
     <div class="tile" style="border-color:var(--gr)"><div class="l">Muscle</div><div class="v" id="d-sm">35.8 kg</div><div class="ch cup">Target: 38 kg</div></div>
     <div class="tile"><div class="l">InBody Score</div><div class="v">79</div><div class="ch cup">Target: 85+</div></div>
   </div>
+  <div class="card" id="alerts-card" style="display:none;border-left:4px solid var(--or)">
+    <div class="ctitle">🔔 Training Alerts</div>
+    <div id="alerts-list"></div>
+  </div>
   <!-- Today's calorie snapshot -->
   <div class="card" id="dash-cal-card">
     <div class="ctitle">🍎 Today's Nutrition</div>
@@ -331,11 +344,15 @@ textarea.field-input{resize:vertical;min-height:80px;line-height:1.5}
   </div>
 
   <!-- Add food buttons -->
-  <div style="display:flex;gap:10px;margin-bottom:14px">
-    <button class="big-btn btnt" onclick="triggerCamera()"><span class="icon">📸</span><span>Photo</span></button>
-    <button class="big-btn btnn" onclick="showTextInput()"><span class="icon">✏️</span><span>Type Food</span></button>
+  <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap">
+    <button class="big-btn btnt" onclick="triggerCamera()"><span class="icon">📸</span><span>Camera</span></button>
+    <button class="big-btn" style="flex:1;background:#4b5563;color:#fff;border:none;border-radius:12px;padding:14px;font-size:14px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px" onclick="triggerGallery()"><span class="icon">🖼️</span><span>Gallery</span></button>
+    <button class="big-btn btnn" onclick="showTextInput()"><span class="icon">✏️</span><span>Type</span></button>
   </div>
+  <!-- Camera: forces live camera capture -->
   <input type="file" accept="image/*" capture="environment" id="food-cam" style="display:none" onchange="handleFoodPhoto(this)">
+  <!-- Gallery: opens file picker / photo library -->
+  <input type="file" accept="image/*" id="food-gallery" style="display:none" onchange="handleFoodPhoto(this)">
 
   <!-- Text input -->
   <div id="food-text-box" style="display:none" class="card">
@@ -391,6 +408,7 @@ textarea.field-input{resize:vertical;min-height:80px;line-height:1.5}
   <div class="card">
     <div class="ctitle">💪 Monday — Push | Chest · Shoulders · Triceps</div>
     <div class="info"><strong>Warm-up:</strong> 10 min mobility + 2 light warm-up sets before first exercise. Add 1.25–2.5 kg when all reps complete with good form.</div>
+    <div id="phase-banner-push" class="phase-banner pb-hyp"></div>
     <div id="push-exercises"></div>
   </div>
 </div>
@@ -401,6 +419,7 @@ textarea.field-input{resize:vertical;min-height:80px;line-height:1.5}
   <div class="card">
     <div class="ctitle">💪 Wednesday — Pull | Back · Biceps · Rear Delts</div>
     <div class="info"><strong>Warm-up:</strong> 10 min mobility + band pull-aparts × 20. Track pull-up max reps weekly as your key KPI.</div>
+    <div id="phase-banner-pull" class="phase-banner pb-hyp"></div>
     <div id="pull-exercises"></div>
   </div>
 </div>
@@ -412,6 +431,7 @@ textarea.field-input{resize:vertical;min-height:80px;line-height:1.5}
   <div class="card">
     <div class="ctitle">💪 Friday — Legs + Abs | Hamstrings · Glutes · Calves · Core</div>
     <div class="info"><strong>Warm-up:</strong> 5 min bike (low resistance) + hip circles + lying glute bridges × 15. No jumping or deep knee flexion.<br><strong>Structure:</strong> Legs first (exercises 1–5) then move straight into the Ab Circuit (exercises 6–10). Total ~60 min.</div>
+    <div id="phase-banner-legs" class="phase-banner pb-hyp"></div>
     <div id="legs-exercises"></div>
   </div>
 </div>
@@ -630,7 +650,8 @@ function defaultData() {
     inbody: [{ date:'2026-05-16', weight:78.7, bf:19.9, fat:15.6, muscle:35.8, visceral:7, score:79, time5k:'38:30' }],
     cardio: { sun:[], tue:[], thu:[] },
     workouts: {},
-    food: {}
+    food: {},
+    phase: { name:'hypertrophy', startDate:'2026-06-22', mesocycle:1 }
   };
 }
 function loadLocal() {
@@ -754,62 +775,79 @@ async function saveData(autoSync = false) {
 
 // ── Exercises ─────────────────────────────────────────────────────────────────
 const PUSH = [
-  { name:'Barbell Bench Press', sets:4, reps:'6–8', rest:'90s', rpe:'7–8',
+  { name:'Technogym Bench Press',
+    phases:{ hypertrophy:{sets:4,reps:'10–12',rest:'75s',rpe:'7–8'}, strength:{sets:5,reps:'5–7',rest:'120s',rpe:'8–9'}, deload:{sets:3,reps:'10–12',rest:'60s',rpe:'5'} },
     cue:'<strong>Setup:</strong> Retract shoulder blades, slight arch, feet flat. <strong>Lower:</strong> Bar to lower chest, elbows 45–75°. <strong>Drive:</strong> Push back and slightly toward eyes. Inhale down, exhale on push.',
-    video:'https://www.youtube.com/results?search_query=barbell+bench+press+proper+form+tutorial' },
-  { name:'Incline Dumbbell Press', sets:3, reps:'8–10', rest:'75s', rpe:'7',
+    video:'https://www.youtube.com/results?search_query=bench+press+proper+form+tutorial' },
+  { name:'Incline Dumbbell Press',
+    phases:{ hypertrophy:{sets:3,reps:'8–10',rest:'75s',rpe:'7'}, strength:{sets:4,reps:'6–8',rest:'90s',rpe:'8'}, deload:{sets:2,reps:'10',rest:'60s',rpe:'5'} },
     cue:'<strong>Angle:</strong> 30–45°. <strong>Press:</strong> Push up and slightly inward, don\'t fully lock elbows. Targets upper chest — key for full chest appearance.',
     video:'https://www.youtube.com/results?search_query=incline+dumbbell+press+upper+chest+form' },
-  { name:'Seated DB Overhead Press', sets:3, reps:'8–10', rest:'90s', rpe:'7–8',
+  { name:'Technogym Shoulder Press',
+    phases:{ hypertrophy:{sets:3,reps:'8–10',rest:'90s',rpe:'7–8'}, strength:{sets:4,reps:'6–8',rest:'120s',rpe:'8–9'}, deload:{sets:2,reps:'10',rest:'60s',rpe:'5'} },
     cue:'<strong>Brace:</strong> Core tight, no lumbar hyperextension. <strong>Press:</strong> Drive straight up. <strong>Control:</strong> 2-second eccentric on the way down.',
-    video:'https://www.youtube.com/results?search_query=seated+dumbbell+overhead+press+form' },
-  { name:'Lateral Raises', sets:4, reps:'12–15', rest:'45s', rpe:'8',
+    video:'https://www.youtube.com/results?search_query=seated+shoulder+press+machine+form' },
+  { name:'Lateral Raises',
+    phases:{ hypertrophy:{sets:4,reps:'12–15',rest:'45s',rpe:'8'}, strength:{sets:3,reps:'10–12',rest:'45s',rpe:'7'}, deload:{sets:2,reps:'15',rest:'30s',rpe:'5'} },
     cue:'<strong>Lead with elbows</strong> to shoulder height. Lean forward 10° to hit medial delt. <strong>Control:</strong> 3-second descent. Do NOT swing.',
     video:'https://www.youtube.com/results?search_query=lateral+raises+proper+form+medial+delt' },
-  { name:'Tricep Dips / Pushdowns', sets:3, reps:'8–12', rest:'60s', rpe:'7',
+  { name:'Tricep Dips / Pushdowns',
+    phases:{ hypertrophy:{sets:3,reps:'8–12',rest:'60s',rpe:'7'}, strength:{sets:4,reps:'6–8',rest:'75s',rpe:'8'}, deload:{sets:2,reps:'10',rest:'45s',rpe:'5'} },
     cue:'<strong>Lean forward</strong> slightly for more chest/tricep engagement. Lower until upper arm parallel to floor. Add weight with belt when 12 reps is easy.',
     video:'https://www.youtube.com/results?search_query=tricep+dips+parallel+bars+form' },
-  { name:'Cable Face Pulls', sets:3, reps:'15', rest:'45s', rpe:'6',
+  { name:'Cable Face Pulls',
+    phases:{ hypertrophy:{sets:3,reps:'15',rest:'45s',rpe:'6'}, strength:{sets:3,reps:'12',rest:'45s',rpe:'6'}, deload:{sets:2,reps:'15',rest:'30s',rpe:'4'} },
     cue:'Cable at face height, rope attachment. <strong>Pull:</strong> Drive elbows back and out, end with hands beside ears. Critical for rotator cuff health. Never skip this.',
     video:'https://www.youtube.com/results?search_query=cable+face+pulls+rear+delt+rotator+cuff' },
 ];
 
 const PULL = [
-  { name:'Pull-Ups (or Assisted)', sets:4, reps:'Max (target 6–10)', rest:'90s', rpe:'8',
+  { name:'Pull-Ups (or Assisted)',
+    phases:{ hypertrophy:{sets:4,reps:'Max (target 6–10)',rest:'90s',rpe:'8'}, strength:{sets:5,reps:'Max (target 4–6)',rest:'120s',rpe:'9'}, deload:{sets:3,reps:'Max (easy)',rest:'60s',rpe:'5'} },
     cue:'<strong>Dead hang start</strong> — full shoulder extension. Drive elbows to hips. Chin clears bar. <strong>3-second descent.</strong> Goal: +1 rep per week.',
     video:'https://www.youtube.com/results?search_query=pull+ups+proper+form+beginners+progress' },
-  { name:'Barbell Bent-Over Row', sets:4, reps:'6–8', rest:'90s', rpe:'7–8',
+  { name:'Barbell Bent-Over Row',
+    phases:{ hypertrophy:{sets:4,reps:'6–8',rest:'90s',rpe:'7–8'}, strength:{sets:5,reps:'4–6',rest:'120s',rpe:'8–9'}, deload:{sets:3,reps:'8',rest:'60s',rpe:'5'} },
     cue:'<strong>Hip hinge</strong> to ~45°, back flat, chest proud. Bar touches lower chest. <strong>2-second eccentric.</strong> Builds back thickness.',
     video:'https://www.youtube.com/results?search_query=barbell+bent+over+row+proper+form' },
-  { name:'Single-Arm DB Row', sets:3, reps:'10–12 /side', rest:'60s', rpe:'7',
+  { name:'Single-Arm DB Row',
+    phases:{ hypertrophy:{sets:3,reps:'10–12 /side',rest:'60s',rpe:'7'}, strength:{sets:4,reps:'8–10 /side',rest:'75s',rpe:'8'}, deload:{sets:2,reps:'10 /side',rest:'45s',rpe:'5'} },
     cue:'Full stretch at bottom — let shoulder blade protract. <strong>Pull elbow straight back</strong> past hip. Hold 1s at top. Fixes left/right imbalance.',
     video:'https://www.youtube.com/results?search_query=single+arm+dumbbell+row+lat+form' },
-  { name:'Seated Cable Row', sets:3, reps:'10–12', rest:'60s', rpe:'7',
+  { name:'Seated Cable Row',
+    phases:{ hypertrophy:{sets:3,reps:'10–12',rest:'60s',rpe:'7'}, strength:{sets:4,reps:'8–10',rest:'75s',rpe:'8'}, deload:{sets:2,reps:'10',rest:'45s',rpe:'5'} },
     cue:'Slight forward lean at start, pull elbows back, <strong>squeeze shoulder blades</strong> together at end. Full stretch forward between reps.',
     video:'https://www.youtube.com/results?search_query=seated+cable+row+form+back' },
-  { name:'Barbell / EZ-Bar Curl', sets:3, reps:'8–10', rest:'60s', rpe:'7',
+  { name:'Barbell / EZ-Bar Curl',
+    phases:{ hypertrophy:{sets:3,reps:'8–10',rest:'60s',rpe:'7'}, strength:{sets:4,reps:'6–8',rest:'75s',rpe:'8'}, deload:{sets:2,reps:'10',rest:'45s',rpe:'5'} },
     cue:'<strong>Elbows pinned to sides.</strong> Supinate wrists at top, squeeze bicep. <strong>3-second descent.</strong> No swinging — ever.',
     video:'https://www.youtube.com/results?search_query=barbell+bicep+curl+proper+form+no+swing' },
-  { name:'Hammer Curl', sets:3, reps:'10–12', rest:'45s', rpe:'7',
+  { name:'Hammer Curl',
+    phases:{ hypertrophy:{sets:3,reps:'10–12',rest:'45s',rpe:'7'}, strength:{sets:3,reps:'8–10',rest:'45s',rpe:'7'}, deload:{sets:2,reps:'12',rest:'30s',rpe:'5'} },
     cue:'Neutral grip (thumbs up) throughout. Targets brachialis — pushes the bicep up and makes arm look thicker. Great for arm size.',
     video:'https://www.youtube.com/results?search_query=hammer+curl+form+brachialis+arm+size' },
 ];
 
 const LEGS = [
   // ── LEGS (Knee-safe) ──
-  { name:'Technogym Leg Press', sets:4, reps:'10–12', rest:'90s', rpe:'7–8',
+  { name:'Technogym Leg Press',
+    phases:{ hypertrophy:{sets:4,reps:'10–12',rest:'90s',rpe:'7–8'}, strength:{sets:5,reps:'7–9',rest:'120s',rpe:'8–9'}, deload:{sets:3,reps:'12',rest:'60s',rpe:'5'} },
     cue:'<strong>Feet shoulder-width, mid-platform.</strong> Lower until ~90° knee bend — stop before hips tuck. Drive through heels. Higher foot placement = more glutes/hamstrings. <strong>No locking knees at top.</strong> Controlled on the way down.',
     video:'https://www.youtube.com/results?search_query=leg+press+machine+knee+injury+safe+form' },
-  { name:'Romanian Deadlift (RDL)', sets:4, reps:'8–10', rest:'90s', rpe:'7–8',
+  { name:'Romanian Deadlift (RDL)',
+    phases:{ hypertrophy:{sets:4,reps:'8–10',rest:'90s',rpe:'7–8'}, strength:{sets:5,reps:'5–7',rest:'120s',rpe:'8–9'}, deload:{sets:3,reps:'10',rest:'60s',rpe:'5'} },
     cue:'<strong>Push hips back</strong> (not down). Bar traces down thighs — keep it close. Feel the hamstring stretch at bottom. Drive hips forward to stand. Minimal knee bend = hamstring dominant, very knee-friendly.',
     video:'https://www.youtube.com/results?search_query=romanian+deadlift+hamstring+hip+hinge+form' },
-  { name:'Lying Leg Curl (Machine)', sets:3, reps:'10–12', rest:'60s', rpe:'7',
+  { name:'Lying Leg Curl (Machine)',
+    phases:{ hypertrophy:{sets:3,reps:'10–12',rest:'60s',rpe:'7'}, strength:{sets:4,reps:'8–10',rest:'75s',rpe:'8'}, deload:{sets:2,reps:'12',rest:'45s',rpe:'5'} },
     cue:'<strong>3-second eccentric (lowering phase).</strong> Don\'t let hips lift off the pad. Full ROM. Hamstring-only movement — zero knee joint compression.',
     video:'https://www.youtube.com/results?search_query=lying+leg+curl+machine+hamstring+form' },
-  { name:'Hip Thrust (Barbell or DB)', sets:3, reps:'10–12', rest:'75s', rpe:'7',
+  { name:'Hip Thrust (Barbell or DB)',
+    phases:{ hypertrophy:{sets:3,reps:'10–12',rest:'75s',rpe:'7'}, strength:{sets:4,reps:'8–10',rest:'90s',rpe:'8'}, deload:{sets:2,reps:'12',rest:'60s',rpe:'5'} },
     cue:'Upper back on bench, bar across hips. <strong>Drive through heels</strong>, squeeze glutes hard at top. Hold 1s at peak. Knees stay at 90° — no knee stress at all.',
     video:'https://www.youtube.com/results?search_query=barbell+hip+thrust+glute+form+tutorial' },
-  { name:'Standing Calf Raise', sets:4, reps:'15–20', rest:'45s', rpe:'7',
+  { name:'Standing Calf Raise',
+    phases:{ hypertrophy:{sets:4,reps:'15–20',rest:'45s',rpe:'7'}, strength:{sets:4,reps:'12–15',rest:'45s',rpe:'7'}, deload:{sets:3,reps:'15',rest:'30s',rpe:'5'} },
     cue:'Ball of foot on step edge for <strong>full range.</strong> Full stretch at bottom (hold 1s), full rise at top (hold 1s). Partial reps don\'t work for calves.',
     video:'https://www.youtube.com/results?search_query=standing+calf+raise+full+range+form' },
   // ── ABS / CORE CIRCUIT ──
@@ -837,10 +875,13 @@ function renderExercises(list, containerId, dayKey) {
   container.innerHTML = '';
   const today = todayStr();
   const wKey = dayKey+'_'+today;
+  const phName = (DATA.phase && DATA.phase.name) || 'hypertrophy';
   list.forEach((ex, i) => {
+    // Resolve phase-specific params (fall back to flat values for abs which have no phases obj)
+    const p = (ex.phases && ex.phases[phName]) ? ex.phases[phName] : ex;
     const saved = (DATA.workouts[wKey]||{})[i]||[];
     let setRows = '';
-    for(let s = 0; s < ex.sets; s++) {
+    for(let s = 0; s < p.sets; s++) {
       const sv = saved[s]||{};
       setRows += `<div class="log-row">
         <div class="snum">${s+1}</div>
@@ -855,10 +896,10 @@ function renderExercises(list, containerId, dayKey) {
         <div>
           <div class="exn">${i+1}. ${ex.name}</div>
           <div class="exm">
-            <span class="bdg bs">${ex.sets} Sets</span>
-            <span class="bdg br">${ex.reps} Reps</span>
-            <span class="bdg brt">Rest ${ex.rest}</span>
-            <span class="bdg brpe">RPE ${ex.rpe}</span>
+            <span class="bdg bs">${p.sets} Sets</span>
+            <span class="bdg br">${p.reps} Reps</span>
+            <span class="bdg brt">Rest ${p.rest}</span>
+            <span class="bdg brpe">RPE ${p.rpe}</span>
           </div>
         </div>
         <div class="exarr">▼</div>
@@ -1047,6 +1088,10 @@ async function handleFoodPhoto(input) {
 function triggerCamera() {
   if(!getGemKey()) { showSetup(); return; }
   document.getElementById('food-cam').click();
+}
+function triggerGallery() {
+  if(!getGemKey()) { showSetup(); return; }
+  document.getElementById('food-gallery').click();
 }
 
 // ── Text Food Analysis ────────────────────────────────────────────────────────
@@ -1407,6 +1452,186 @@ function update5K() {
   saveData(true);
 }
 
+// ── Phase System ─────────────────────────────────────────────────────────────
+function getPhaseWeek() {
+  const start = new Date((DATA.phase && DATA.phase.startDate) || '2026-06-22');
+  return Math.max(1, Math.floor((new Date() - start) / (7*24*60*60*1000)) + 1);
+}
+
+function setPhase(name) {
+  if(!DATA.phase) DATA.phase = { name:'hypertrophy', startDate: todayStr(), mesocycle:1 };
+  if(name === 'hypertrophy' && DATA.phase.name === 'deload') {
+    DATA.phase.mesocycle = (DATA.phase.mesocycle || 1) + 1;
+  }
+  DATA.phase.name = name;
+  DATA.phase.startDate = todayStr();
+  saveData(true);
+  renderPhaseBanners();
+  renderAlerts();
+  renderExercises(PUSH, 'push-exercises', 'push');
+  renderExercises(PULL, 'pull-exercises', 'pull');
+  renderExercises(LEGS, 'legs-exercises', 'legs');
+  const labels = { hypertrophy:'Hypertrophy', strength:'Strength', deload:'Deload' };
+  showToast('✅ Switched to ' + labels[name] + ' phase!', 'ok');
+}
+
+function renderPhaseBanners() {
+  const ph = (DATA.phase && DATA.phase.name) || 'hypertrophy';
+  const week = getPhaseWeek();
+  const mc = (DATA.phase && DATA.phase.mesocycle) || 1;
+  const clsMap = { hypertrophy:'pb-hyp', strength:'pb-str', deload:'pb-del' };
+  const labelMap = { hypertrophy:'💪 Hypertrophy Phase', strength:'🏋️ Strength Phase', deload:'😴 Deload Week' };
+  const descMap = {
+    hypertrophy: `Week ${week} of 4 &nbsp;·&nbsp; 10–12 reps &nbsp;·&nbsp; Moderate weight &nbsp;·&nbsp; Build volume`,
+    strength:    `Week ${week} of 4 &nbsp;·&nbsp; 5–7 reps &nbsp;·&nbsp; Heavy weight &nbsp;·&nbsp; Build density`,
+    deload:      `Week ${week} &nbsp;·&nbsp; Light weight &nbsp;·&nbsp; 40% less volume &nbsp;·&nbsp; Recover & adapt`
+  };
+  const btnHtml = ['hypertrophy','strength','deload'].map(p =>
+    `<button class="phase-btn${p===ph?' ph-active':''}" onclick="setPhase('${p}')">${p==='hypertrophy'?'HYP':p==='strength'?'STR':'DLD'}</button>`
+  ).join('');
+  const html = `<div style="flex:1;min-width:160px">
+    <strong>${labelMap[ph]}</strong>
+    <span style="opacity:.7;font-size:11px;display:block;margin-top:2px">Mesocycle ${mc} &nbsp;·&nbsp; ${descMap[ph]}</span>
+  </div>
+  <div style="display:flex;gap:5px;flex-shrink:0">${btnHtml}</div>`;
+  ['push','pull','legs'].forEach(d => {
+    const el = document.getElementById('phase-banner-'+d);
+    if(el) { el.className = 'phase-banner ' + clsMap[ph]; el.innerHTML = html; }
+  });
+}
+
+// ── Smart Alerts ──────────────────────────────────────────────────────────────
+function generateAlerts() {
+  const alerts = [];
+  const ph = DATA.phase || { name:'hypertrophy', startDate:'2026-06-22', mesocycle:1 };
+  const week = getPhaseWeek();
+
+  // ── 1. Phase transition reminders ──
+  if(ph.name === 'hypertrophy' && week >= 5) {
+    alerts.push({ id:'to-strength', icon:'🏋️', type:'warn',
+      title:'Switch to Strength Phase',
+      msg:`You've completed ${week-1} weeks of Hypertrophy. Time to go heavier (5–7 reps) for 4 weeks to build density and strength.`,
+      action:'Switch Now', fn:"setPhase('strength')"
+    });
+  }
+  if(ph.name === 'strength' && week >= 5) {
+    alerts.push({ id:'to-deload', icon:'😴', type:'warn',
+      title:'Deload Week Due',
+      msg:`Week ${week} of Strength phase. Your joints and CNS need a reset — drop weight 40%, same exercises. This is when gains are locked in.`,
+      action:'Start Deload', fn:"setPhase('deload')"
+    });
+  }
+  if(ph.name === 'deload' && week >= 2) {
+    alerts.push({ id:'new-meso', icon:'🔄', type:'ok',
+      title:'Start Mesocycle ' + ((ph.mesocycle||1) + 1),
+      msg:`Deload complete! You'll carry more strength into this next block. Begin Hypertrophy phase for Mesocycle ${(ph.mesocycle||1)+1}.`,
+      action:'Start New Mesocycle', fn:"setPhase('hypertrophy')"
+    });
+  }
+
+  // ── 2. Progressive overload stall (per exercise, last 14 days) ──
+  const wKeys = Object.keys(DATA.workouts || {});
+  const exWeights = {}; // exName → [{date, maxW}]
+  wKeys.forEach(key => {
+    const parts = key.split('_');
+    const dayKey = parts[0];
+    const dateStr = parts.slice(1).join('-');
+    const day = DATA.workouts[key];
+    const list = dayKey==='push'?PUSH : dayKey==='pull'?PULL : LEGS;
+    Object.keys(day).forEach(idx => {
+      const ex = list[parseInt(idx)];
+      if(!ex) return;
+      const maxW = Math.max(...(day[idx]||[]).map(s => parseFloat(s.w)||0));
+      if(maxW > 0) {
+        if(!exWeights[ex.name]) exWeights[ex.name] = [];
+        exWeights[ex.name].push({ date:dateStr, w:maxW });
+      }
+    });
+  });
+  Object.keys(exWeights).forEach(exName => {
+    const entries = exWeights[exName].sort((a,b) => new Date(a.date)-new Date(b.date));
+    if(entries.length >= 3) {
+      const first = entries[0], last = entries[entries.length-1];
+      const days = (new Date(last.date)-new Date(first.date))/(24*60*60*1000);
+      if(days >= 14 && last.w <= first.w) {
+        alerts.push({ id:'stall-'+exName.replace(/\W/g,''), icon:'📊', type:'warn',
+          title:`Stall Detected: ${exName}`,
+          msg:`No weight increase in ${Math.round(days)} days (${first.w}kg → ${last.w}kg). Try: add 1.25 kg, use a drop-set on last set, or reduce rest by 15s.`,
+          action:null
+        });
+      }
+    }
+  });
+
+  // ── 3. InBody weight stall (3+ scans, 14+ days, <0.3kg change) ──
+  if(DATA.inbody && DATA.inbody.length >= 3) {
+    const last3 = DATA.inbody.slice(-3);
+    const days = (new Date(last3[2].date)-new Date(last3[0].date))/(24*60*60*1000);
+    if(days >= 14 && (last3[2].weight||99) >= (last3[0].weight||99) - 0.3) {
+      alerts.push({ id:'wt-stall', icon:'⚖️', type:'warn',
+        title:'Weight Loss Stalled',
+        msg:`No significant drop across last 3 InBody scans. Cut 150–200 kcal/day or swap one rest day for a 30-min walk. Check you're hitting 160g protein.`,
+        action:null
+      });
+    }
+    // BF% stall
+    if(last3[2].bf && last3[0].bf && days >= 14 && last3[2].bf >= last3[0].bf - 0.2) {
+      alerts.push({ id:'bf-stall', icon:'🔥', type:'info',
+        title:'Body Fat % Not Dropping',
+        msg:`BF% flat across last 3 scans. Focus on: hitting protein target daily, reducing refined carbs after 8pm, keeping all 3 cardio sessions in Zone 2.`,
+        action:null
+      });
+    }
+    // Visceral fat stall
+    const last2 = DATA.inbody.slice(-2);
+    if(last2.length===2 && last2[1].visceral && last2[0].visceral && last2[1].visceral >= last2[0].visceral) {
+      alerts.push({ id:'vis-stall', icon:'🫀', type:'info',
+        title:`Visceral Fat Unchanged (Level ${last2[1].visceral})`,
+        msg:`Visceral fat hasn't dropped since last scan. Key driver: reduce sugar and processed carbs — visceral fat responds to dietary changes faster than any exercise.`,
+        action:null
+      });
+    }
+  }
+
+  // ── 4. Missed workout (>8 days since last log) ──
+  ['push','pull','legs'].forEach(dayKey => {
+    const keys = wKeys.filter(k => k.startsWith(dayKey+'_'));
+    if(!keys.length) return;
+    const lastDate = keys.map(k => k.split('_').slice(1).join('-')).sort().pop();
+    const daysSince = Math.floor((new Date()-new Date(lastDate))/(24*60*60*1000));
+    if(daysSince >= 8) {
+      const lbl = dayKey.charAt(0).toUpperCase()+dayKey.slice(1);
+      alerts.push({ id:'missed-'+dayKey, icon:'📅', type:'info',
+        title:`${lbl} Day Overdue (${daysSince} days)`,
+        msg:`Last ${lbl} session was ${daysSince} days ago. Skipping sessions at your frequency will stall both fat loss and muscle gain.`,
+        action:'Open '+lbl, fn:`goSec('${dayKey}',null)`
+      });
+    }
+  });
+
+  return alerts;
+}
+
+function renderAlerts() {
+  const alerts = generateAlerts();
+  const card = document.getElementById('alerts-card');
+  const list = document.getElementById('alerts-list');
+  if(!card || !list) return;
+  if(!alerts.length) { card.style.display='none'; return; }
+  card.style.display = 'block';
+  list.innerHTML = alerts.map(a => `<div class="alert-item">
+    <div class="alert-icon">${a.icon}</div>
+    <div class="alert-body">
+      <div class="alert-title a-${a.type}">${a.title}</div>
+      <div class="alert-msg">${a.msg}</div>
+      ${a.action ? `<button class="btn btnn" style="padding:4px 12px;font-size:12px;margin-top:6px" onclick="${a.fn}">${a.action}</button>` : ''}
+    </div>
+  </div>`).join('');
+  // Update badge on warning icon
+  const badge = document.getElementById('alert-badge');
+  if(badge) badge.textContent = alerts.length;
+}
+
 // ── Dates ─────────────────────────────────────────────────────────────────────
 function setTodayDates() {
   const t = todayStr();
@@ -1433,6 +1658,9 @@ function setTodayDates() {
   // Show setup if no Gemini key
   if(!getGemKey()) showSetup();
 
+  if(!DATA.phase) DATA.phase = { name:'hypertrophy', startDate: todayStr(), mesocycle:1 };
+  renderPhaseBanners();
+  renderAlerts();
   renderExercises(PUSH, 'push-exercises', 'push');
   renderExercises(PULL, 'pull-exercises', 'pull');
   renderExercises(LEGS, 'legs-exercises', 'legs');
