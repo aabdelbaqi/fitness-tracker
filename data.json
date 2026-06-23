@@ -91,6 +91,61 @@
           "fat": 0
         }
       }
+    ],
+    "2026-06-23": [
+      {
+        "id": 1782207297156,
+        "time": "13:34",
+        "meal_name": "salad",
+        "foods": [
+          {
+            "name": "spinach",
+            "portion": "100g",
+            "calories": 20,
+            "protein": 3,
+            "carbs": 3,
+            "fat": 0
+          },
+          {
+            "name": "cucumber",
+            "portion": "100g",
+            "calories": 16,
+            "protein": 1,
+            "carbs": 4,
+            "fat": 0
+          },
+          {
+            "name": "edamame",
+            "portion": "100g",
+            "calories": 125,
+            "protein": 10,
+            "carbs": 10,
+            "fat": 2
+          },
+          {
+            "name": "chicken breast",
+            "portion": "100g",
+            "calories": 165,
+            "protein": 31,
+            "carbs": 0,
+            "fat": 3
+          },
+          {
+            "name": "dried cranberries",
+            "portion": "20g",
+            "calories": 70,
+            "protein": 0,
+            "carbs": 18,
+            "fat": 0
+          }
+        ],
+        "totals": {
+          "calories": 396,
+          "protein": 45,
+          "carbs": 35,
+          "fat": 5
+        }
+      }
     ]
   },
   "phase": {
