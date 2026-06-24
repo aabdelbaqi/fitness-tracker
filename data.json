@@ -156,6 +156,29 @@
           "fat": 5
         }
       }
+    ],
+    "2026-06-24": [
+      {
+        "id": 1782277498626,
+        "time": "09:04",
+        "meal_name": "Greek Yogurt Plain (200g)",
+        "foods": [
+          {
+            "name": "Greek Yogurt Plain (200g)",
+            "portion": "1 serving",
+            "calories": 130,
+            "protein": 22,
+            "carbs": 9,
+            "fat": 0
+          }
+        ],
+        "totals": {
+          "calories": 130,
+          "protein": 22,
+          "carbs": 9,
+          "fat": 0
+        }
+      }
     ]
   },
   "phase": {
