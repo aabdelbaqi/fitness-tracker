@@ -19,7 +19,17 @@
   ],
   "cardio": {
     "sun": [],
-    "tue": [],
+    "tue": [
+      {
+        "type": "Intervals",
+        "date": "2026-06-23",
+        "reps": "4",
+        "pace": "6:30",
+        "time": "40",
+        "hr": "174",
+        "feel": ""
+      }
+    ],
     "thu": []
   },
   "workouts": {},
