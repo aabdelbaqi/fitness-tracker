@@ -18,7 +18,17 @@
     }
   ],
   "cardio": {
-    "sun": [],
+    "sun": [
+      {
+        "type": "Base Run",
+        "date": "2026-06-28",
+        "dist": "6.2",
+        "time": "45",
+        "hr": "133",
+        "feel": "",
+        "notes": ""
+      }
+    ],
     "tue": [
       {
         "type": "Intervals",
