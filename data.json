@@ -40,7 +40,17 @@
         "feel": ""
       }
     ],
-    "thu": []
+    "thu": [
+      {
+        "type": "Tempo",
+        "date": "2026-06-25",
+        "dist": "4",
+        "pace": "6:45",
+        "time": "30",
+        "hr": "148",
+        "feel": ""
+      }
+    ]
   },
   "workouts": {},
   "food": {
