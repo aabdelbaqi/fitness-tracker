@@ -32,6 +32,15 @@
     "tue": [
       {
         "type": "Intervals",
+        "date": "2026-06-30",
+        "reps": "4",
+        "pace": "6:31",
+        "time": "35",
+        "hr": "165",
+        "feel": ""
+      },
+      {
+        "type": "Intervals",
         "date": "2026-06-23",
         "reps": "4",
         "pace": "6:30",
